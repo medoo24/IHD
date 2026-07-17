@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coronary Pathophysiology Explorer</title>
+    
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Load Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Load FontAwesome for Medical Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+            overflow-x: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+        .slide-up {
+            animation: slideUp 0.5s ease-out forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Interactive Card Hover Effects */
+        .hover-lift {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .hover-lift:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Timeline specific styles */
+        .timeline-line {
+            position: absolute;
+            left: 1.25rem;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: #e2e8f0;
+            z-index: 0;
+        }
+
+        /* Glassmorphism utility */
+        .glass {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased h-screen flex flex-col md:flex-row">
+
+    <nav class="bg-slate-900 text-white w-full md:w-72 flex-shrink-0 flex flex-col z-20 shadow-xl shadow-slate-900/20 relative">
+        <div class="p-6 pb-4 border-b border-slate-700">
+            <div class="flex items-center gap-3 text-rose-500 mb-2">
+                <i class="fas fa-heartbeat text-3xl"></i>
+                <h1 class="text-xl font-bold text-white leading-tight">CardioExplorer</h1>
+            </div>
+            <p class="text-slate-400 text-xs mt-2 font-medium tracking-wide uppercase">Interactive Pathophysiology</p>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="flex flex-row md:flex-col overflow-x-auto md:overflow-y-auto hide-scrollbar p-4 gap-2 flex-grow">
+            <button onclick="switchTab('anatomy')" id="nav-anatomy" class="nav-btn w-full text-left px-4 py-3 rounded-xl transition-all duration-200 flex items-center gap-3 whitespace-nowrap bg-rose-500/10 text-rose-400 shadow-sm border border-rose-500/20">
+                <i class="fas fa-sitemap w-5 text-center"></i>
+                <span class="font-medium text-sm">Anatomy & Perfusion</span>
+            </button>
+            <button onclick="switchTab('supply')" id="nav-supply" class="nav-btn w-full text-left px-4 py-3 rounded-xl transition-all duration-200 flex items-center gap-3 whitespace-nowrap text-slate-400 hover:bg-slate-800 hover:text-white">
+                <i class="fas fa-balance-scale w-5 text-center"></i>
+                <span class="font-medium text-sm">Supply vs. Demand</span>
+            </button>
+            <button onclick="switchTab('athero')" id="nav-athero" class="nav-btn w-full text-left px-4 py-3 rounded-xl transition-all duration-200 flex items-center gap-3 whitespace-nowrap text-slate-400 hover:bg-slate-800 hover:text-white">
+                <i class="fas fa-disease w-5 text-center"></i>
+                <span class="font-medium text-sm">Atherosclerosis</span>
+            </button>
+            <button onclick="switchTab('mi')" id="nav-mi" class="nav-btn w-full text-left px-4 py-3 rounded-xl transition-all duration-200 flex items-center gap-3 whitespace-nowrap text-slate-400 hover:bg-slate-800 hover:text-white">
+                <i class="fas fa-clock-rotate-left w-5 text-center"></i>
+                <span class="font-medium text-sm">MI Evolution</span>
+            </button>
+        </div>
+        
+        <div class="p-4 border-t border-slate-700 hidden md:block">
+            <p class="text-xs text-slate-500">Select a module above to explore the clinical concepts interactively.</p>
+        </div>
+    </nav>
+
+    <main class="flex-grow overflow-y-auto relative bg-slate-50">
+        <!-- Background decorative elements -->
+        <div class="absolute top-0 right-0 w-96 h-96 bg-rose-500/5 rounded-full blur-3xl -z-10 pointer-events-none"></div>
+        <div class="absolute bottom-0 left-0 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl -z-10 pointer-events-none"></div>
+
+        <div id="content-container" class="max-w-6xl mx-auto p-6 md:p-10 pb-24 min-h-full flex flex-col justify-center">
+            <!-- Content gets injected here dynamically -->
+        </div>
+    </main>
+
+    <script>
+        // Centralized Data Object containing all clinical text
+        const clinicalData = {
+            anatomy: {
+                intro: "The coronary circulation is delivered via the left and right coronary arteries, which arise from the aortic sinuses just above the aortic valve.",
+                arteries: [
+                    { 
+                        title: "Left Coronary Artery (LCA)", 
+                        icon: "fa-arrow-turn-down",
+                        color: "rose",
+                        desc: "The left main coronary artery typically divides into the left anterior descending (LAD) and the left circumflex (LCx) arteries.",
+                        branches: [
+                            { name: "LAD", target: "Supplies anterior 2/3 of interventricular septum, anterolateral papillary muscle, anterior LV surface, and usually cardiac apex." },
+                            { name: "LCx", target: "Travels in left AV groove, supplying lateral and posterolateral LV walls, and variable portions of inferior/posterior territories." }
+                        ]
+                    },
+                    { 
+                        title: "Right Coronary Artery (RCA)", 
+                        icon: "fa-arrows-split-up-and-left",
+                        color: "blue",
+                        desc: "Runs in the right atrioventricular groove and gives off acute marginal and nodal branches.",
+                        branches: [
+                            { name: "Supplies", target: "Predominantly supplies the RV, right atrium, inferior LV wall, posterior 1/3 of interventricular septum, posteromedial papillary muscle, and SA/AV nodes." }
+                        ]
+                    }
+                ],
+                dominance: {
+                    intro: "Coronary dominance is strictly defined by which artery gives rise to the posterior descending artery (PDA), which supplies the posterior circulation.",
+                    types: [
+                        { name: "Right Dominance", desc: "Present in the majority of individuals, where the PDA arises from the RCA.", stat: "Most Common" },
+                        { name: "Left Dominance", desc: "The PDA arises from the LCx.", stat: "Variant" },
+                        { name: "Codominance", desc: "The posterior and inferior myocardial territories are supplied by branches from both the RCA and the LCx.", stat: "Variant" }
+                    ],
+                    clinical: "Dominance is clinically vital because it dictates the extent of the myocardial territory at risk during an occlusion; for instance, a proximal RCA occlusion in a right-dominant system threatens both the inferior LV and the AV node, commonly resulting in heart block."
+                },
+                perfusion: "Because systolic myocardial contraction physically compresses intramyocardial vessels, coronary perfusion to the left ventricle occurs predominantly during diastole. Right-coronary flow is less dependent on diastole because the RV generates lower systolic pressures and wall stress, allowing for a more continuous flow."
+            },
+            
+            supplyDemand: {
+                intro: "Ischemic heart disease occurs when myocardial oxygen demand exceeds the delivery capacity of the coronary circulation.",
+                supply: {
+                    title: "Variables Reducing Oxygen Supply",
+                    subtitle: "Determined by arterial O2 content & coronary flow",
+                    items: [
+                        { name: "Coronary Obstruction", desc: "Fixed atherosclerotic narrowing, dynamic vasospasm, or spontaneous dissection restricts maximal flow.", icon: "fa-ban" },
+                        { name: "Reduced Diastolic Time", desc: "Tachycardia shortens the duration of diastole, critically limiting the time available for left ventricular perfusion.", icon: "fa-stopwatch" },
+                        { name: "Decreased Perfusion Pressure", desc: "Hypotension (low aortic diastolic pressure) or elevated left-ventricular end-diastolic pressure narrows the driving gradient for coronary blood flow.", icon: "fa-arrow-down-short-wide" },
+                        { name: "Microvascular Dysfunction", desc: "Capillary rarefaction, endothelial dysfunction, or impaired arteriolar vasodilation can blunt the coronary flow reserve even without large-vessel disease.", icon: "fa-network-wired" },
+                        { name: "Reduced Oxygen Content", desc: "Severe hypoxemia or significant anemia can precipitate ischemia by limiting the actual oxygen carried in the blood, independent of vessel patency.", icon: "fa-lungs" }
+                    ]
+                },
+                demand: {
+                    title: "Variables Increasing Oxygen Demand",
+                    subtitle: "Driven by HR, contractility, and wall stress",
+                    items: [
+                        { name: "Tachycardia", desc: "A rapid heart rate increases the number of energy-consuming contractions per minute, acting as a double-edged sword that simultaneously spikes demand while reducing supply time.", icon: "fa-heart-circle-bolt" },
+                        { name: "Increased Wall Stress/Afterload", desc: "According to Laplace's law, wall stress rises with increased intracavitary pressure and chamber radius. Conditions like chronic hypertension, aortic stenosis, and ventricular dilation force the heart to generate higher pressures, thereby surging oxygen requirements.", icon: "fa-compress" },
+                        { name: "Increased Contractility", desc: "Sympathetic stimulation, exercise, or inotropic agents enhance the force of contraction, which utilizes more adenosine triphosphate (ATP).", icon: "fa-dumbbell" },
+                        { name: "Hypermetabolic States", desc: "Fever, thyrotoxicosis, or severe physical exertion drive systemic and cardiac metabolic rates upward.", icon: "fa-fire-flame-curved" }
+                    ]
+                }
+            },
+
+            athero: [
+                { 
+                    id: 'step1',
+                    title: "Endothelial Dysfunction", 
+                    icon: "fa-virus",
+                    color: "amber",
+                    content: "A healthy endothelium releases nitric oxide and prostacyclin, which promote vasodilation and inhibit platelet activation and smooth-muscle proliferation. <br><br>Cardiovascular risk factors (e.g., smoking, hypertension, diabetes, dyslipidemia) degrade this environment, increasing oxidative stress and reducing nitric oxide bioavailability. The dysfunctional endothelium becomes highly permeable, promotes vasoconstriction, and expresses adhesion molecules that attract inflammatory cells and platelets." 
+                },
+                { 
+                    id: 'step2',
+                    title: "Plaque Formation", 
+                    icon: "fa-layer-group",
+                    color: "orange",
+                    content: "Apolipoprotein B-containing particles, notably low-density lipoprotein (LDL), penetrate the permeable endothelium and become trapped by proteoglycans in the arterial intima. Here, the lipids undergo oxidation and modification.<br><br>In response to endothelial chemotactic signals, circulating monocytes adhere, migrate into the intima, and transform into macrophages. These macrophages relentlessly consume the modified lipids via scavenger receptors, turning into lipid-laden <strong>'foam cells'</strong>.<br><br>Ongoing inflammation forces vascular smooth-muscle cells to migrate from the tunica media to the intima, where they proliferate and deposit collagen and elastin. This forms a fibrous cap overlying a growing necrotic core composed of dead cells, cholesterol crystals, and debris." 
+                },
+                { 
+                    id: 'step3',
+                    title: "Vulnerability & Thrombosis", 
+                    icon: "fa-heart-crack",
+                    color: "red",
+                    content: "A stable plaque possesses a thick fibrous cap, a small lipid core, and prominent smooth-muscle, causing predictable angina. A vulnerable plaque features a massive necrotic core, intense inflammation, and a dangerously thin fibrous cap.<br><br><div class='bg-red-50 p-4 rounded-lg mt-4 border border-red-200'><h4 class='font-bold text-red-800 mb-2'>Acute Coronary Syndromes occur when plaques fail:</h4><ul class='list-disc pl-5 space-y-2 text-sm text-slate-700'><li><strong>Rupture:</strong> Macrophage-derived proteases weaken the fibrous cap until it tears at its shoulder, exposing the highly thrombogenic necrotic core and tissue factor. Triggers massive platelet activation.</li><li><strong>Erosion:</strong> Endothelial layer sloughs off exposing subendothelial matrix. Activated platelets release thromboxane A2 and ADP, aggregating via GP IIb/IIIa receptors. Thrombin converts fibrinogen to fibrin cementing the clot. This dynamic thrombus can completely occlude the artery or embolize.</li></ul></div>" 
+                }
+            ],
+
+            mi: [
+                { 
+                    time: "0 to 24 Hours", 
+                    bg: "bg-red-100", border: "border-red-400", text: "text-red-600",
+                    macro: "The tissue shows dark mottling and appears pale when exposed to tetrazolium stain.", 
+                    micro: "Between 0 to 4 hours, the myocardium demonstrates wavy fibers. From 4 to 24 hours, early coagulative necrosis begins, cellular contents are released into the blood, and local edema and hemorrhage appear. If reperfusion occurs, free radical damage and calcium influx can cause hypercontraction of myofibrils, visible as dark eosinophilic <strong>'contraction bands'</strong>.", 
+                    comps: "Malignant ventricular arrhythmias, heart failure, and cardiogenic shock." 
+                },
+                { 
+                    time: "1 to 3 Days", 
+                    bg: "bg-orange-100", border: "border-orange-400", text: "text-orange-600",
+                    macro: "The infarcted area becomes overtly hyperemic.", 
+                    micro: "Extensive coagulative necrosis is present, and an acute inflammatory response brings a heavy infiltrate of neutrophils to the tissue surrounding the infarct.", 
+                    comps: "Postinfarction fibrinous pericarditis." 
+                },
+                { 
+                    time: "3 to 14 Days", 
+                    bg: "bg-amber-100", border: "border-amber-400", text: "text-amber-600",
+                    macro: "The infarct develops a hyperemic border with central yellow-brown softening.", 
+                    micro: "Macrophages arrive to scavenge necrotic debris, followed by the appearance of vascularized granulation tissue advancing at the margins.", 
+                    comps: "Because macrophages structurally degrade the tissue to clear it, the ventricular wall is at its weakest. This is the peak window for free-wall rupture (causing tamponade), papillary muscle rupture (causing acute mitral regurgitation), and interventricular septal rupture (causing a left-to-right shunt)." 
+                },
+                { 
+                    time: "2 Weeks to Months", 
+                    bg: "bg-slate-200", border: "border-slate-400", text: "text-slate-600",
+                    macro: "The area matures into a firm, gray-white scar.", 
+                    micro: "The healing process culminates in a complete, contracted, dense collagenous scar.", 
+                    comps: "Dressler syndrome (autoimmune pericarditis), heart failure, arrhythmias arising from scar boundary circuits, and true ventricular aneurysms (which carry a risk of mural thrombus)." 
+                }
+            ]
+        };
+
+        function renderAnatomy() {
+            const data = clinicalData.anatomy;
+            return `
+                <div class="fade-in max-w-5xl mx-auto space-y-8">
+                    <!-- Header -->
+                    <div class="text-center mb-8">
+                        <h2 class="text-3xl font-bold text-slate-800 mb-4">Coronary Anatomy & Perfusion</h2>
+                        <p class="text-slate-600 max-w-3xl mx-auto text-lg">${data.intro}</p>
+                    </div>
+
+                    <!-- Arteries Flexbox -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        ${data.arteries.map(art => `
+                            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 hover-lift relative overflow-hidden group">
+                                <div class="absolute top-0 right-0 w-24 h-24 bg-${art.color}-500/10 rounded-bl-full -z-0 transition-transform group-hover:scale-110"></div>
+                                <div class="flex items-center gap-4 mb-4 relative z-10">
+                                    <div class="w-12 h-12 rounded-full bg-${art.color}-100 flex items-center justify-center text-${art.color}-500 text-xl shadow-sm">
+                                        <i class="fas ${art.icon}"></i>
+                                    </div>
+                                    <h3 class="text-xl font-bold text-slate-800">${art.title}</h3>
+                                </div>
+                                <p class="text-slate-600 mb-4 relative z-10">${art.desc}</p>
+                                <div class="space-y-3 relative z-10">
+                                    ${art.branches.map(b => `
+                                        <div class="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                                            <span class="font-bold text-slate-700 block mb-1">${b.name}</span>
+                                            <span class="text-sm text-slate-600">${b.target}</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <!-- Dominance & Perfusion -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Dominance -->
+                        <div class="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                            <h3 class="text-xl font-bold text-slate-800 mb-2 flex items-center gap-2">
+                                <i class="fas fa-code-branch text-indigo-500"></i> Coronary Dominance
+                            </h3>
+                            <p class="text-sm text-slate-600 mb-5">${data.dominance.intro}</p>
+                            
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
+                                ${data.dominance.types.map(type => `
+                                    <div class="p-4 rounded-xl border border-indigo-100 bg-indigo-50/50 hover:bg-indigo-50 transition-colors">
+                                        <div class="text-xs font-semibold text-indigo-600 mb-1 uppercase tracking-wide">${type.stat}</div>
+                                        <h4 class="font-bold text-slate-800 mb-2">${type.name}</h4>
+                                        <p class="text-xs text-slate-600 leading-relaxed">${type.desc}</p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <div class="bg-rose-50 border-l-4 border-rose-500 p-4 rounded-r-lg">
+                                <p class="text-sm text-rose-800"><i class="fas fa-exclamation-circle mr-2"></i><strong>Clinical Pearl:</strong> ${data.dominance.clinical}</p>
+                            </div>
+                        </div>
+
+                        <!-- Perfusion Physiology -->
+                        <div class="bg-slate-800 text-white rounded-2xl p-6 shadow-md relative overflow-hidden">
+                            <i class="fas fa-heart-pulse absolute -bottom-6 -right-6 text-9xl text-white/5"></i>
+                            <h3 class="text-xl font-bold mb-4 flex items-center gap-2 relative z-10">
+                                <i class="fas fa-water text-blue-400"></i> Perfusion Physiology
+                            </h3>
+                            <p class="text-slate-300 text-sm leading-relaxed relative z-10">${data.perfusion}</p>
+                            
+                            <div class="mt-6 flex flex-col gap-3 relative z-10">
+                                <div class="bg-white/10 p-3 rounded-lg flex items-center justify-between">
+                                    <span class="text-sm font-medium">LV Perfusion</span>
+                                    <span class="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded">Diastole Predominant</span>
+                                </div>
+                                <div class="bg-white/10 p-3 rounded-lg flex items-center justify-between">
+                                    <span class="text-sm font-medium">RV Perfusion</span>
+                                    <span class="text-xs bg-emerald-500/20 text-emerald-300 px-2 py-1 rounded">Continuous Flow</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderSupplyDemand() {
+            const data = clinicalData.supplyDemand;
+            return `
+                <div class="fade-in max-w-5xl mx-auto flex flex-col h-full">
+                    <div class="text-center mb-8">
+                        <h2 class="text-3xl font-bold text-slate-800 mb-4">Oxygen Supply vs. Demand</h2>
+                        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm inline-block max-w-3xl">
+                            <p class="text-slate-700 font-medium">
+                                <i class="fas fa-exclamation-triangle text-amber-500 mr-2"></i>
+                                ${data.intro}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 relative mt-4">
+                        <!-- Decorative center vs icon -->
+                        <div class="hidden lg:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-white rounded-full border-4 border-slate-50 items-center justify-center shadow-lg z-10">
+                            <span class="font-bold text-slate-400">VS</span>
+                        </div>
+
+                        <!-- Supply Column -->
+                        <div class="bg-blue-50 rounded-2xl p-6 border border-blue-100 flex flex-col shadow-sm">
+                            <div class="text-center mb-6">
+                                <div class="w-16 h-16 mx-auto bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-2xl mb-3 shadow-inner">
+                                    <i class="fas fa-lungs-virus"></i>
+                                </div>
+                                <h3 class="text-xl font-bold text-blue-900">${data.supply.title}</h3>
+                                <p class="text-sm text-blue-700 mt-1">${data.supply.subtitle}</p>
+                            </div>
+                            
+                            <div class="space-y-3 flex-grow">
+                                ${data.supply.items.map((item, index) => `
+                                    <div class="bg-white p-4 rounded-xl shadow-sm border border-blue-50 hover-lift cursor-pointer" onclick="toggleDetails('supply-${index}')">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center gap-3">
+                                                <i class="fas ${item.icon} w-5 text-center text-blue-400"></i>
+                                                <span class="font-bold text-slate-800">${item.name}</span>
+                                            </div>
+                                            <i class="fas fa-chevron-down text-slate-300 text-xs transition-transform duration-200" id="icon-supply-${index}"></i>
+                                        </div>
+                                        <div class="hidden mt-3 text-sm text-slate-600 border-t border-slate-100 pt-3" id="supply-${index}">
+                                            ${item.desc}
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <!-- Demand Column -->
+                        <div class="bg-rose-50 rounded-2xl p-6 border border-rose-100 flex flex-col shadow-sm">
+                            <div class="text-center mb-6">
+                                <div class="w-16 h-16 mx-auto bg-rose-100 text-rose-600 rounded-full flex items-center justify-center text-2xl mb-3 shadow-inner">
+                                    <i class="fas fa-heart-crack"></i>
+                                </div>
+                                <h3 class="text-xl font-bold text-rose-900">${data.demand.title}</h3>
+                                <p class="text-sm text-rose-700 mt-1">${data.demand.subtitle}</p>
+                            </div>
+                            
+                            <div class="space-y-3 flex-grow">
+                                ${data.demand.items.map((item, index) => `
+                                    <div class="bg-white p-4 rounded-xl shadow-sm border border-rose-50 hover-lift cursor-pointer" onclick="toggleDetails('demand-${index}')">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center gap-3">
+                                                <i class="fas ${item.icon} w-5 text-center text-rose-400"></i>
+                                                <span class="font-bold text-slate-800">${item.name}</span>
+                                            </div>
+                                            <i class="fas fa-chevron-down text-slate-300 text-xs transition-transform duration-200" id="icon-demand-${index}"></i>
+                                        </div>
+                                        <div class="hidden mt-3 text-sm text-slate-600 border-t border-slate-100 pt-3" id="demand-${index}">
+                                            ${item.desc}
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderAthero() {
+            const data = clinicalData.athero;
+            return `
+                <div class="fade-in max-w-4xl mx-auto w-full">
+                    <div class="text-center mb-10">
+                        <h2 class="text-3xl font-bold text-slate-800 mb-3">Atherosclerosis Pathogenesis</h2>
+                        <p class="text-slate-500">Interactive timeline of plaque formation and rupture</p>
+                    </div>
+
+                    <!-- Horizontal Stepper -->
+                    <div class="relative flex justify-between items-center mb-12 px-4 md:px-12">
+                        <div class="absolute left-12 right-12 top-1/2 h-1 bg-slate-200 -translate-y-1/2 z-0 rounded-full"></div>
+                        
+                        ${data.map((step, idx) => `
+                            <button onclick="setAtheroStep(${idx})" id="athero-btn-${idx}" class="relative z-10 flex flex-col items-center group focus:outline-none">
+                                <div id="athero-icon-bg-${idx}" class="w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 ${idx === 0 ? `bg-${step.color}-500 text-white shadow-lg shadow-${step.color}-500/40 ring-4 ring-white` : 'bg-slate-200 text-slate-500 group-hover:bg-slate-300 ring-4 ring-slate-50'}">
+                                    <i class="fas ${step.icon} text-xl"></i>
+                                </div>
+                                <span id="athero-title-${idx}" class="mt-3 text-sm font-bold transition-colors ${idx === 0 ? `text-${step.color}-600` : 'text-slate-400'} hidden md:block max-w-[120px] text-center">
+                                    ${step.title}
+                                </span>
+                            </button>
+                        `).join('')}
+                    </div>
+
+                    <!-- Content Display Area -->
+                    <div id="athero-content-area" class="bg-white rounded-2xl p-6 md:p-8 shadow-md border border-slate-200 slide-up min-h-[300px] flex flex-col justify-center">
+                        <!-- Injected by setAtheroStep() -->
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderMI() {
+            const data = clinicalData.mi;
+            return `
+                <div class="fade-in max-w-5xl mx-auto w-full">
+                    <div class="text-center mb-10">
+                        <h2 class="text-3xl font-bold text-slate-800 mb-3">Evolution of Myocardial Infarction</h2>
+                        <p class="text-slate-500 max-w-2xl mx-auto">Persistent occlusion leads to irreversible cardiomyocyte death. Select a timeframe to view gross, microscopic, and clinical changes.</p>
+                    </div>
+
+                    <div class="flex flex-col md:flex-row gap-8">
+                        <!-- Timeline Left Column -->
+                        <div class="w-full md:w-1/3 relative pl-4">
+                            <div class="timeline-line"></div>
+                            <div class="space-y-6 relative z-10">
+                                ${data.map((phase, idx) => `
+                                    <button onclick="setMIPhase(${idx})" id="mi-btn-${idx}" class="w-full text-left flex items-center gap-4 p-3 rounded-xl transition-all duration-200 hover:bg-slate-100 ${idx === 0 ? 'bg-white shadow-sm ring-1 ring-slate-200' : 'opacity-70 hover:opacity-100'}">
+                                        <div class="w-4 h-4 rounded-full border-4 ${phase.border} ${idx === 0 ? phase.bg : 'bg-white'} flex-shrink-0" id="mi-dot-${idx}"></div>
+                                        <span class="font-bold text-slate-700" id="mi-text-${idx}">${phase.time}</span>
+                                    </button>
+                                `).join('')}
+                            </div>
+                            
+                            <div class="mt-8 bg-slate-800 text-white p-5 rounded-xl shadow-md text-sm border-l-4 border-rose-500 hidden md:block">
+                                <p><i class="fas fa-info-circle mr-2 text-rose-400"></i><strong>Note:</strong> Infarction typically initiates in the highly vulnerable subendocardium and progresses outward toward the epicardium (transmural infarction).</p>
+                            </div>
+                        </div>
+
+                        <!-- Details Right Column -->
+                        <div class="w-full md:w-2/3">
+                            <div id="mi-details-area" class="slide-up">
+                                <!-- Injected by setMIPhase() -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        
+        // Helper: Toggle accordions in Supply/Demand
+        window.toggleDetails = function(id) {
+            const el = document.getElementById(id);
+            const icon = document.getElementById('icon-' + id);
+            if (el.classList.contains('hidden')) {
+                el.classList.remove('hidden');
+                el.classList.add('fade-in');
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                el.classList.add('hidden');
+                el.classList.remove('fade-in');
+                icon.style.transform = 'rotate(0deg)';
+            }
+        };
+
+        // Atherosclerosis State Management
+        let currentAtheroStep = 0;
+        window.setAtheroStep = function(index) {
+            const data = clinicalData.athero;
+            currentAtheroStep = index;
+
+            // Update Stepper UI
+            data.forEach((step, idx) => {
+                const bg = document.getElementById(`athero-icon-bg-${idx}`);
+                const title = document.getElementById(`athero-title-${idx}`);
+                
+                // Reset
+                bg.className = `w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 bg-slate-200 text-slate-500 ring-4 ring-slate-50`;
+                if(title) title.className = `mt-3 text-sm font-bold transition-colors text-slate-400 hidden md:block max-w-[120px] text-center`;
+
+                // Set Active
+                if (idx === index) {
+                    bg.className = `w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 bg-${step.color}-500 text-white shadow-lg shadow-${step.color}-500/40 ring-4 ring-white scale-110`;
+                    if(title) title.className = `mt-3 text-sm font-bold transition-colors text-${step.color}-600 hidden md:block max-w-[120px] text-center`;
+                } else if (idx < index) {
+                     // Past steps styling
+                     bg.className = `w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 bg-${step.color}-100 text-${step.color}-500 ring-4 ring-slate-50`;
+                }
+            });
+
+            // Update Content Area
+            const activeData = data[index];
+            const contentArea = document.getElementById('athero-content-area');
+            
+            // Remove animation class to re-trigger it
+            contentArea.classList.remove('slide-up');
+            void contentArea.offsetWidth; // trigger reflow
+            contentArea.classList.add('slide-up');
+
+            contentArea.innerHTML = `
+                <div class="flex items-center gap-4 mb-6 border-b border-slate-100 pb-4">
+                    <div class="w-12 h-12 rounded-full bg-${activeData.color}-100 text-${activeData.color}-600 flex items-center justify-center text-xl">
+                        <i class="fas ${activeData.icon}"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-slate-800">${activeData.title}</h3>
+                </div>
+                <div class="text-slate-700 leading-relaxed text-lg">
+                    ${activeData.content}
+                </div>
+            `;
+        };
+
+        // MI Timeline State Management
+        let currentMIPhase = 0;
+        window.setMIPhase = function(index) {
+            const data = clinicalData.mi;
+            currentMIPhase = index;
+
+            // Update Timeline UI
+            data.forEach((phase, idx) => {
+                const btn = document.getElementById(`mi-btn-${idx}`);
+                const dot = document.getElementById(`mi-dot-${idx}`);
+                const text = document.getElementById(`mi-text-${idx}`);
+
+                if (idx === index) {
+                    btn.className = `w-full text-left flex items-center gap-4 p-3 rounded-xl transition-all duration-200 bg-white shadow-sm ring-1 ring-slate-200`;
+                    dot.className = `w-4 h-4 rounded-full border-4 ${phase.border} ${phase.bg} flex-shrink-0 scale-125 transition-transform`;
+                    text.className = `font-bold text-slate-800 text-lg transition-all`;
+                } else {
+                    btn.className = `w-full text-left flex items-center gap-4 p-3 rounded-xl transition-all duration-200 opacity-60 hover:opacity-100 hover:bg-slate-100`;
+                    dot.className = `w-4 h-4 rounded-full border-4 border-slate-300 bg-white flex-shrink-0 transition-transform`;
+                    text.className = `font-medium text-slate-500 transition-all`;
+                }
+            });
+
+            // Update Details Area
+            const activeData = data[index];
+            const detailsArea = document.getElementById('mi-details-area');
+            
+            detailsArea.classList.remove('slide-up');
+            void detailsArea.offsetWidth;
+            detailsArea.classList.add('slide-up');
+
+            detailsArea.innerHTML = `
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="${activeData.bg} px-6 py-4 border-b ${activeData.border}">
+                        <h3 class="text-xl font-bold ${activeData.text}">Timeframe: ${activeData.time}</h3>
+                    </div>
+                    <div class="p-6 space-y-6">
+                        <!-- Macroscopic -->
+                        <div class="flex gap-4">
+                            <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 flex-shrink-0">
+                                <i class="fas fa-eye"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-800 text-lg mb-1">Macroscopic Changes</h4>
+                                <p class="text-slate-600">${activeData.macro}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="w-full h-px bg-slate-100"></div>
+
+                        <!-- Microscopic -->
+                        <div class="flex gap-4">
+                            <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 flex-shrink-0">
+                                <i class="fas fa-microscope"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-800 text-lg mb-1">Microscopic Changes</h4>
+                                <p class="text-slate-600">${activeData.micro}</p>
+                            </div>
+                        </div>
+
+                        <div class="w-full h-px bg-slate-100"></div>
+
+                        <!-- Complications -->
+                        <div class="flex gap-4">
+                            <div class="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center text-rose-500 flex-shrink-0">
+                                <i class="fas fa-triangle-exclamation"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-rose-800 text-lg mb-1">Key Complications</h4>
+                                <p class="text-slate-700">${activeData.comps}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        };
+
+        window.switchTab = function(tabId) {
+            const container = document.getElementById('content-container');
+            
+            // Reset nav styles
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.className = 'nav-btn w-full text-left px-4 py-3 rounded-xl transition-all duration-200 flex items-center gap-3 whitespace-nowrap text-slate-400 hover:bg-slate-800 hover:text-white';
+            });
+            
+            // Set active nav style
+            const activeBtn = document.getElementById('nav-' + tabId);
+            activeBtn.className = 'nav-btn w-full text-left px-4 py-3 rounded-xl transition-all duration-200 flex items-center gap-3 whitespace-nowrap bg-rose-500/10 text-rose-400 shadow-sm border border-rose-500/20';
+
+            // Render content based on selected tab
+            switch(tabId) {
+                case 'anatomy':
+                    container.innerHTML = renderAnatomy();
+                    break;
+                case 'supply':
+                    container.innerHTML = renderSupplyDemand();
+                    break;
+                case 'athero':
+                    container.innerHTML = renderAthero();
+                    // Initialize first step
+                    setTimeout(() => setAtheroStep(0), 10);
+                    break;
+                case 'mi':
+                    container.innerHTML = renderMI();
+                    // Initialize first phase
+                    setTimeout(() => setMIPhase(0), 10);
+                    break;
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load initial tab
+            switchTab('anatomy');
+        });
+
+    </script>
+</body>
+</html>
