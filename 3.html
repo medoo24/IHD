@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acute Coronary Syndromes Guide</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* tailwind slate-50 */
+        }
+        
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        .accordion-content {
+            transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="text-slate-900 pb-12 min-h-screen">
+
+    <!-- Header -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="py-6 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-rose-600 p-2 rounded-xl text-white shadow-md">
+                        <i data-lucide="heart-pulse" class="w-8 h-8"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">Acute Coronary Syndromes</h1>
+                        <p class="text-sm font-medium text-slate-500">Interactive Clinical Guide</p>
+                    </div>
+                </div>
+                
+                <!-- Desktop Navigation Container -->
+                <nav id="desktop-nav" class="hidden md:flex space-x-1 bg-slate-100 p-1 rounded-xl">
+                    <!-- Populated by JS -->
+                </nav>
+            </div>
+
+            <!-- Mobile Navigation Container -->
+            <div id="mobile-nav" class="md:hidden flex overflow-x-auto pb-4 hide-scrollbar space-x-2">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 md:pt-12" id="main-content">
+        <!-- Content injected by JS -->
+    </main>
+
+    <script>
+        // Application State
+        let activeTab = 'pathophysiology';
+
+        // Data Definitions
+        const TABS = [
+            { id: 'pathophysiology', label: 'Pathophysiology', icon: 'heart-pulse' },
+            { id: 'triage', label: 'Diagnostic Triage', icon: 'activity' },
+            { id: 'classification', label: 'Clinical Classification', icon: 'shield-alert' },
+            { id: 'treatment', label: 'Treatment Pathways', icon: 'pill' },
+        ];
+
+        const PATHOPHYSIOLOGY_STEPS = [
+            {
+                title: "Plaque Vulnerability",
+                shortDesc: "Triggered by a vulnerable plaque, not stable fibrotic ones.",
+                content: "Unlike Chronic Coronary Syndromes (CCS), which are typically driven by a stable, heavily fibrotic plaque that causes predictable exertional ischemia, Acute Coronary Syndromes (ACS) are triggered by the disruption of a vulnerable atherosclerotic plaque. Characterized by a large lipid or necrotic core, intense macrophage-driven inflammation, decreased reparative smooth-muscle cells, and a dangerously thin fibrous cap.",
+                icon: "alert-triangle",
+                color: "text-amber-500",
+                bgColor: "bg-amber-100"
+            },
+            {
+                title: "Plaque Disruption",
+                shortDesc: "Failure through rupture or erosion.",
+                content: "Because of macrophage-derived proteases degrading the matrix and mechanical stress concentrating at the plaque's shoulders, the plaque becomes highly susceptible to failure. It fails through either rupture (tearing of the fibrous cap, exposing the necrotic core and tissue factor) or erosion (sloughing of the endothelial layer, exposing the subendothelial matrix).",
+                icon: "zap",
+                color: "text-orange-500",
+                bgColor: "bg-orange-100"
+            },
+            {
+                title: "Thrombus Formation",
+                shortDesc: "Activation of the coagulation cascade.",
+                content: "Both mechanisms expose circulating blood to thrombogenic material, instantly activating the coagulation cascade. Platelets adhere, activate, and release mediators like thromboxane A2 and adenosine diphosphate (ADP), recruiting more platelets. Simultaneously, thrombin converts fibrinogen into a fibrin mesh to stabilize the growing clot.",
+                icon: "droplet",
+                color: "text-red-500",
+                bgColor: "bg-red-100"
+            },
+            {
+                title: "Occlusion",
+                shortDesc: "Dynamic obstruction of coronary flow.",
+                content: "Because coronary thrombosis is highly dynamic, the resulting thrombus can be fully occlusive, subtotal, or intermittent, and can embolize distally into the microcirculation.",
+                icon: "lock",
+                color: "text-slate-700",
+                bgColor: "bg-slate-200"
+            }
+        ];
+
+        
+        function renderNavigation() {
+            const desktopNav = document.getElementById('desktop-nav');
+            const mobileNav = document.getElementById('mobile-nav');
+            
+            // Desktop
+            desktopNav.innerHTML = TABS.map(tab => {
+                const isActive = activeTab === tab.id;
+                return `
+                    <button data-tab="${tab.id}" class="flex items-center px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200 ${isActive ? 'bg-white text-rose-600 shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'}">
+                        <i data-lucide="${tab.icon}" class="w-4 h-4 mr-2 ${isActive ? 'text-rose-500' : 'text-slate-400'}"></i>
+                        ${tab.label}
+                    </button>
+                `;
+            }).join('');
+
+            // Mobile
+            mobileNav.innerHTML = TABS.map(tab => {
+                const isActive = activeTab === tab.id;
+                return `
+                    <button data-tab="${tab.id}" class="flex items-center px-4 py-2.5 text-sm font-medium rounded-xl whitespace-nowrap transition-all ${isActive ? 'bg-rose-50 text-rose-700 border border-rose-200 shadow-sm' : 'bg-white text-slate-600 border border-slate-200'}">
+                        <i data-lucide="${tab.icon}" class="w-4 h-4 mr-2 ${isActive ? 'text-rose-600' : 'text-slate-400'}"></i>
+                        ${tab.label}
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function renderPathophysiology() {
+            const stepsHtml = PATHOPHYSIOLOGY_STEPS.map((step, index) => `
+                <div class="relative pl-8 md:pl-10">
+                    <div class="absolute -left-[21px] top-1 w-10 h-10 rounded-full border-4 border-white ${step.bgColor} flex items-center justify-center shadow-sm">
+                        <i data-lucide="${step.icon}" class="w-4 h-4 ${step.color}"></i>
+                    </div>
+                    <div class="bg-slate-50 rounded-xl p-5 border border-slate-100 hover:shadow-md transition-shadow">
+                        <h4 class="text-lg font-bold text-slate-800">${step.title}</h4>
+                        <p class="text-slate-500 font-medium text-sm mb-3">${step.shortDesc}</p>
+                        <p class="text-slate-600 leading-relaxed text-sm md:text-base">${step.content}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            return `
+                <div class="space-y-8 animate-in">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                        <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center">
+                            <i data-lucide="heart-pulse" class="mr-2 text-rose-500 w-6 h-6"></i> Pathogenesis Timeline
+                        </h3>
+                        <div class="relative border-l-2 border-slate-200 ml-4 md:ml-6 space-y-8 pb-4">
+                            ${stepsHtml}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        
+        function renderTriage() {
+            return `
+                <div class="grid md:grid-cols-2 gap-6 animate-in">
+                    <!-- ECG Card -->
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col h-full">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-blue-100 p-3 rounded-lg mr-4">
+                                <i data-lucide="activity" class="w-6 h-6 text-blue-600"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-800">Immediate 12-lead ECG</h3>
+                        </div>
+                        <p class="text-slate-600 mb-4 leading-relaxed">
+                            The <strong>absolute first step</strong> in ACS triage is recognizing symptoms and recording a 12-lead ECG as rapidly as possible. The ECG fundamentally dictates the emergency pathway.
+                        </p>
+                        <div class="mt-auto space-y-3">
+                            <div class="bg-rose-50 border-l-4 border-rose-500 p-4 rounded-r-lg">
+                                <h4 class="font-semibold text-rose-800">Persistent ST-Elevation</h4>
+                                <p class="text-rose-600 text-sm mt-1">Requires immediate reperfusion.</p>
+                            </div>
+                            <div class="bg-slate-50 border-l-4 border-slate-400 p-4 rounded-r-lg">
+                                <h4 class="font-semibold text-slate-800">Non-Diagnostic Tracing</h4>
+                                <p class="text-slate-600 text-sm mt-1">If symptoms continue, serial ECGs must be performed.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Troponin Card -->
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col h-full">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-purple-100 p-3 rounded-lg mr-4">
+                                <i data-lucide="syringe" class="w-6 h-6 text-purple-600"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-800">High-Sensitivity Troponin</h3>
+                        </div>
+                        <p class="text-slate-600 mb-4 leading-relaxed">
+                            Highly sensitive and specific biomarkers for myocardial necrosis. Diagnostic logic relies heavily on observing a <strong>dynamic acute rise and/or fall</strong>.
+                        </p>
+                        
+                        <div class="space-y-3 mt-auto">
+                            <div class="flex items-start bg-slate-50 p-3 rounded-lg">
+                                <div class="min-w-[8px] h-2 mt-2 rounded-full bg-slate-400 mr-3"></div>
+                                <p class="text-sm text-slate-700"><strong>Stable, chronic elevation:</strong> Suggests background structural heart disease or CKD rather than an acute event.</p>
+                            </div>
+                            <div class="flex items-start bg-slate-50 p-3 rounded-lg">
+                                <div class="min-w-[8px] h-2 mt-2 rounded-full bg-purple-500 mr-3"></div>
+                                <p class="text-sm text-slate-700"><strong>Acute elevation without ischemia:</strong> Indicates acute myocardial injury from other causes (sepsis, myocarditis, PE).</p>
+                            </div>
+                            <div class="bg-amber-50 border border-amber-200 p-4 rounded-xl mt-4">
+                                <h4 class="font-bold text-amber-800 flex items-center text-sm">
+                                    <i data-lucide="alert-triangle" class="w-4 h-4 mr-2"></i> Crucial Rule
+                                </h4>
+                                <p class="text-amber-700 text-sm mt-2 leading-relaxed">
+                                    While troponin is required to differentiate UA from NSTEMI, <strong>reperfusion in a confirmed STEMI must never be delayed</strong> while waiting for a troponin result.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderClassification() {
+            return `
+                <div class="grid lg:grid-cols-3 gap-6 animate-in">
+                    <!-- UA Card -->
+                    <div class="bg-white rounded-2xl shadow-sm border-t-4 border-t-amber-400 border border-slate-100 overflow-hidden flex flex-col hover:shadow-md transition-all">
+                        <div class="p-6 pb-4">
+                            <h3 class="text-xl font-bold text-slate-800">Unstable Angina (UA)</h3>
+                            <p class="text-amber-600 font-medium text-sm mb-4">Ischemia without Necrosis</p>
+                            <p class="text-slate-600 text-sm leading-relaxed mb-6">
+                                Presents as chest pain that is new in onset, accelerating in frequency or severity, or occurring at rest. Signals significant plaque instability and impending infarction risk.
+                            </p>
+                        </div>
+                        <div class="bg-slate-50 p-6 mt-auto border-t border-slate-100 space-y-4">
+                            <div>
+                                <span class="text-xs uppercase font-bold text-slate-400 tracking-wider">Biomarkers</span>
+                                <p class="text-slate-800 font-medium flex items-center mt-1">
+                                    <span class="w-2 h-2 rounded-full bg-slate-300 mr-2"></span> Negative (No rise)
+                                </p>
+                            </div>
+                            <div>
+                                <span class="text-xs uppercase font-bold text-slate-400 tracking-wider">ECG Findings</span>
+                                <p class="text-slate-800 font-medium text-sm mt-1">
+                                    No persistent ST elevation. May display transient ST depression or T-wave inversions.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- NSTEMI Card -->
+                    <div class="bg-white rounded-2xl shadow-sm border-t-4 border-t-orange-500 border border-slate-100 overflow-hidden flex flex-col hover:shadow-md transition-all">
+                        <div class="p-6 pb-4">
+                            <h3 class="text-xl font-bold text-slate-800">NSTEMI</h3>
+                            <p class="text-orange-600 font-medium text-sm mb-4">Subendocardial Infarction</p>
+                            <p class="text-slate-600 text-sm leading-relaxed mb-6">
+                                Occurs when a subtotal, intermittent, or microembolic occlusion causes actual myocardial necrosis, usually predominantly in the subendocardium.
+                            </p>
+                        </div>
+                        <div class="bg-slate-50 p-6 mt-auto border-t border-slate-100 space-y-4">
+                            <div>
+                                <span class="text-xs uppercase font-bold text-slate-400 tracking-wider">Biomarkers</span>
+                                <p class="text-slate-800 font-medium flex items-center mt-1">
+                                    <span class="w-2 h-2 rounded-full bg-orange-500 mr-2"></span> Positive (Acute rise/fall)
+                                </p>
+                            </div>
+                            <div>
+                                <span class="text-xs uppercase font-bold text-slate-400 tracking-wider">ECG Findings</span>
+                                <p class="text-slate-800 font-medium text-sm mt-1">
+                                    Ischemic changes (ST depression or T-wave inversion) without persistent ST elevation.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEMI Card -->
+                    <div class="bg-white rounded-2xl shadow-sm border-t-4 border-t-rose-600 border border-slate-100 overflow-hidden flex flex-col hover:shadow-md transition-all lg:scale-105 relative z-10 lg:-mt-2">
+                        <div class="absolute top-0 right-0 bg-rose-600 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">CRITICAL</div>
+                        <div class="p-6 pb-4">
+                            <h3 class="text-xl font-bold text-slate-800">STEMI</h3>
+                            <p class="text-rose-600 font-medium text-sm mb-4">Transmural Infarction</p>
+                            <p class="text-slate-600 text-sm leading-relaxed mb-6">
+                                Most critical presentation resulting from an acute, complete (or near-complete) occlusion of an epicardial coronary artery leading to severe transmural ischemia.
+                            </p>
+                        </div>
+                        <div class="bg-slate-50 p-6 mt-auto border-t border-slate-100 space-y-4">
+                            <div>
+                                <span class="text-xs uppercase font-bold text-slate-400 tracking-wider">Biomarkers</span>
+                                <p class="text-slate-800 font-medium flex items-center mt-1">
+                                    <span class="w-2 h-2 rounded-full bg-rose-600 mr-2"></span> Positive (But do not wait!)
+                                </p>
+                            </div>
+                            <div>
+                                <span class="text-xs uppercase font-bold text-slate-400 tracking-wider">ECG Findings</span>
+                                <p class="text-rose-700 font-bold text-sm mt-1 bg-rose-100 p-2 rounded-md">
+                                    Persistent ST-segment elevation in anatomically contiguous leads (or equivalent).
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+
+        // Helper to generate an accordion
+        function createAccordion(id, title, icon, contentHtml, isOpen = false) {
+            return `
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-4 transition-all">
+                    <button data-accordion="${id}" class="w-full flex items-center justify-between p-5 md:p-6 text-left transition-colors ${isOpen ? 'bg-slate-50' : 'hover:bg-slate-50'}">
+                        <div class="flex items-center">
+                            <div class="p-2 rounded-lg mr-4 transition-colors ${isOpen ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-100 text-slate-500'}" id="icon-bg-${id}">
+                                <i data-lucide="${icon}" class="w-5 h-5 md:w-6 md:h-6"></i>
+                            </div>
+                            <h3 class="font-bold text-lg transition-colors ${isOpen ? 'text-indigo-900' : 'text-slate-800'}" id="title-${id}">${title}</h3>
+                        </div>
+                        <i data-lucide="chevron-down" id="chevron-${id}" class="w-5 h-5 text-slate-400 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}"></i>
+                    </button>
+                    <div id="content-${id}" class="accordion-content overflow-hidden ${isOpen ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}">
+                        <div class="p-5 md:p-6 border-t border-slate-100 bg-white">
+                            ${contentHtml}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderTreatment() {
+            const medStabContent = `
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                        <h4 class="font-bold text-slate-800 flex items-center mb-2">
+                            <span class="w-2 h-2 rounded-full bg-blue-500 mr-2"></span> Antiplatelets
+                        </h4>
+                        <p class="text-sm text-slate-600">Prompt loading of Aspirin + P2Y12 inhibitor (ticagrelor, prasugrel, or clopidogrel) for DAPT. Ticagrelor/prasugrel preferred for PCI.</p>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                        <h4 class="font-bold text-slate-800 flex items-center mb-2">
+                            <span class="w-2 h-2 rounded-full bg-purple-500 mr-2"></span> Anticoagulants
+                        </h4>
+                        <p class="text-sm text-slate-600">Parenteral anticoagulation (UFH, enoxaparin, bivalirudin, fondaparinux) during acute phase to prevent fibrin propagation.</p>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                        <h4 class="font-bold text-slate-800 flex items-center mb-2">
+                            <span class="w-2 h-2 rounded-full bg-teal-500 mr-2"></span> Anti-ischemics
+                        </h4>
+                        <p class="text-sm text-slate-600">Nitrates for symptom relief. Beta-blockers to reduce oxygen demand (if hemodynamically stable, no acute HF/shock).</p>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                        <h4 class="font-bold text-slate-800 flex items-center mb-2">
+                            <span class="w-2 h-2 rounded-full bg-amber-500 mr-2"></span> Statins
+                        </h4>
+                        <p class="text-sm text-slate-600">High-intensity statin therapy initiated early to stabilize the plaque and reduce long-term lipid-related risk.</p>
+                    </div>
+                </div>
+            `;
+
+            const reperfusionContent = `
+                <div class="space-y-4">
+                    <p class="text-slate-600 mb-4">STEMI demands an emergency reperfusion strategy to limit infarct size and salvage myocardium.</p>
+                    
+                    <div class="bg-rose-50 border border-rose-100 p-5 rounded-xl flex flex-col md:flex-row gap-4 items-start">
+                        <div class="bg-white p-2 rounded-full shadow-sm shrink-0">
+                            <i data-lucide="heart-pulse" class="w-6 h-6 text-rose-600"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-rose-900 text-lg">Primary PCI (Preferred)</h4>
+                            <p class="text-rose-800 text-sm mt-1">If performed within strict timeframe by experienced team (door-to-balloon &lt;90 mins). Mechanically restores flow and secures vessel with a stent.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 border border-slate-200 p-5 rounded-xl flex flex-col md:flex-row gap-4 items-start">
+                        <div class="bg-white p-2 rounded-full shadow-sm shrink-0">
+                            <i data-lucide="syringe" class="w-6 h-6 text-slate-600"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-800 text-lg">Fibrinolytic Therapy</h4>
+                            <p class="text-slate-600 text-sm mt-1">For eligible patients presenting early (&lt;12h from onset) when timely PCI is unavailable. Strict contraindications must be respected due to bleeding risks.</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const nsteContent = `
+                <p class="text-slate-600 mb-6">Because NSTE-ACS represents a wide spectrum of risk, angiography timing is tailored to clinical stability.</p>
+                
+                <div class="relative border-l-2 border-indigo-200 ml-4 space-y-6 pb-2">
+                    <div class="relative pl-6">
+                        <div class="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-rose-500 border-4 border-white shadow-sm"></div>
+                        <h4 class="font-bold text-slate-800">Immediate Invasive (&lt; 2 hours)</h4>
+                        <p class="text-sm text-slate-600 mt-1 bg-white p-3 rounded-lg border border-slate-100 shadow-sm">Required for very high-risk: cardiogenic shock, hemodynamic instability, refractory/recurrent chest pain, life-threatening arrhythmias, or mechanical complications.</p>
+                    </div>
+                    
+                    <div class="relative pl-6">
+                        <div class="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-amber-500 border-4 border-white shadow-sm"></div>
+                        <h4 class="font-bold text-slate-800">Early Invasive (&lt; 24 hours)</h4>
+                        <p class="text-sm text-slate-600 mt-1 bg-white p-3 rounded-lg border border-slate-100 shadow-sm">Indicated for high-risk patients: confirmed troponin elevation (NSTEMI) or significant dynamic ST-segment changes.</p>
+                    </div>
+                    
+                    <div class="relative pl-6">
+                        <div class="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-emerald-500 border-4 border-white shadow-sm"></div>
+                        <h4 class="font-bold text-slate-800">Ischemia-Guided (Selective)</h4>
+                        <p class="text-sm text-slate-600 mt-1 bg-white p-3 rounded-lg border border-slate-100 shadow-sm">Lower-risk patients managed medically first. Angiography reserved for recurrent angina, hemodynamic instability, or positive non-invasive stress testing.</p>
+                    </div>
+                </div>
+            `;
+
+            return `
+                <div class="animate-in max-w-4xl mx-auto">
+                    <p class="text-center text-slate-600 mb-8 max-w-2xl mx-auto">
+                        Treatment pathways are highly dependent on the initial ECG and clinical classification, focusing on stabilization, reperfusion, and risk stratification.
+                    </p>
+                    ${createAccordion('acc-1', 'Medical Stabilization (All ACS Patients)', 'pill', medStabContent, true)}
+                    ${createAccordion('acc-2', 'Immediate Reperfusion for STEMI', 'zap', reperfusionContent, false)}
+                    ${createAccordion('acc-3', 'Risk-Stratified Invasive Strategy (NSTE-ACS)', 'activity', nsteContent, false)}
+                </div>
+            `;
+        }
+
+
+        function renderMainContent() {
+            const mainContent = document.getElementById('main-content');
+            
+            switch (activeTab) {
+                case 'pathophysiology':
+                    mainContent.innerHTML = renderPathophysiology();
+                    break;
+                case 'triage':
+                    mainContent.innerHTML = renderTriage();
+                    break;
+                case 'classification':
+                    mainContent.innerHTML = renderClassification();
+                    break;
+                case 'treatment':
+                    mainContent.innerHTML = renderTreatment();
+                    break;
+                default:
+                    mainContent.innerHTML = renderPathophysiology();
+            }
+        }
+
+        function updateApp() {
+            renderNavigation();
+            renderMainContent();
+            lucide.createIcons(); // Refresh icons after innerHTML changes
+        }
+
+        // Event Delegation for Tabs and Accordions
+        document.addEventListener('click', (e) => {
+            // Handle Tabs
+            const tabBtn = e.target.closest('[data-tab]');
+            if (tabBtn) {
+                activeTab = tabBtn.dataset.tab;
+                updateApp();
+            }
+
+            // Handle Accordions
+            const accordionBtn = e.target.closest('[data-accordion]');
+            if (accordionBtn) {
+                const id = accordionBtn.dataset.accordion;
+                const contentEl = document.getElementById(`content-${id}`);
+                const chevronEl = document.getElementById(`chevron-${id}`);
+                const iconBgEl = document.getElementById(`icon-bg-${id}`);
+                const titleEl = document.getElementById(`title-${id}`);
+                
+                const isOpen = !contentEl.classList.contains('max-h-0');
+
+                if (isOpen) {
+                    // Close it
+                    contentEl.classList.add('max-h-0', 'opacity-0');
+                    contentEl.classList.remove('max-h-[1000px]', 'opacity-100');
+                    
+                    accordionBtn.classList.add('hover:bg-slate-50');
+                    accordionBtn.classList.remove('bg-slate-50');
+                    
+                    chevronEl.classList.remove('rotate-180');
+                    
+                    iconBgEl.classList.remove('bg-indigo-100', 'text-indigo-700');
+                    iconBgEl.classList.add('bg-slate-100', 'text-slate-500');
+                    
+                    titleEl.classList.remove('text-indigo-900');
+                    titleEl.classList.add('text-slate-800');
+                } else {
+                    // Open it
+                    contentEl.classList.remove('max-h-0', 'opacity-0');
+                    contentEl.classList.add('max-h-[1000px]', 'opacity-100');
+                    
+                    accordionBtn.classList.remove('hover:bg-slate-50');
+                    accordionBtn.classList.add('bg-slate-50');
+                    
+                    chevronEl.classList.add('rotate-180');
+                    
+                    iconBgEl.classList.add('bg-indigo-100', 'text-indigo-700');
+                    iconBgEl.classList.remove('bg-slate-100', 'text-slate-500');
+                    
+                    titleEl.classList.add('text-indigo-900');
+                    titleEl.classList.remove('text-slate-800');
+                }
+            }
+        });
+
+        // Bootstrap App
+        document.addEventListener('DOMContentLoaded', () => {
+            updateApp();
+        });
+    </script>
+</body>
+</html>
