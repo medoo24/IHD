@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chronic Coronary Syndromes (CCS)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-fadeIn {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        /* Hide scrollbar for mobile horizontal nav */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* SVG Icon default classes */
+        .svg-icon {
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+    </style>
+</head>
+<body class="text-slate-900 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-slate-900 text-white p-6 shadow-md">
+        <div class="max-w-6xl mx-auto">
+            <h1 class="text-3xl font-bold tracking-tight">Chronic Coronary Syndromes (CCS)</h1>
+            <p class="text-slate-400 mt-2 text-sm md:text-base">An interactive clinical guide to pathophysiology, diagnosis, and management.</p>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto p-4 md:p-6 flex flex-col md:flex-row gap-6 w-full flex-1">
+        
+        <!-- Navigation Sidebar -->
+        <nav class="md:w-64 flex-shrink-0 flex flex-row md:flex-col overflow-x-auto md:overflow-visible gap-2 pb-2 md:pb-0 scrollbar-hide">
+            
+            <button data-target="section-patho" class="nav-tab flex items-center p-3 rounded-xl transition-all duration-200 whitespace-nowrap border bg-blue-600 text-white border-blue-600 shadow-md transform scale-[1.02]">
+                <svg class="svg-icon w-5 h-5 mr-3 text-white" viewBox="0 0 24 24">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                <span class="font-medium text-sm md:text-base">Pathophysiology</span>
+            </button>
+
+            <button data-target="section-clinical" class="nav-tab flex items-center p-3 rounded-xl transition-all duration-200 whitespace-nowrap border bg-white text-slate-600 hover:bg-slate-100 border-slate-200">
+                <svg class="svg-icon w-5 h-5 mr-3 text-slate-400" viewBox="0 0 24 24">
+                    <path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/>
+                    <path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4"/>
+                    <circle cx="20" cy="10" r="2"/>
+                </svg>
+                <span class="font-medium text-sm md:text-base">Clinical Recognition</span>
+            </button>
+
+            <button data-target="section-diagnostics" class="nav-tab flex items-center p-3 rounded-xl transition-all duration-200 whitespace-nowrap border bg-white text-slate-600 hover:bg-slate-100 border-slate-200">
+                <svg class="svg-icon w-5 h-5 mr-3 text-slate-400" viewBox="0 0 24 24">
+                    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+                </svg>
+                <span class="font-medium text-sm md:text-base">Diagnostics</span>
+            </button>
+
+            <button data-target="section-management" class="nav-tab flex items-center p-3 rounded-xl transition-all duration-200 whitespace-nowrap border bg-white text-slate-600 hover:bg-slate-100 border-slate-200">
+                <svg class="svg-icon w-5 h-5 mr-3 text-slate-400" viewBox="0 0 24 24">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/>
+                </svg>
+                <span class="font-medium text-sm md:text-base">Management</span>
+            </button>
+
+            <button data-target="section-special" class="nav-tab flex items-center p-3 rounded-xl transition-all duration-200 whitespace-nowrap border bg-white text-slate-600 hover:bg-slate-100 border-slate-200">
+                <svg class="svg-icon w-5 h-5 mr-3 text-slate-400" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" x2="12" y1="8" y2="12"/>
+                    <line x1="12" x2="12.01" y1="16" y2="16"/>
+                </svg>
+                <span class="font-medium text-sm md:text-base">Special Syndromes</span>
+            </button>
+        </nav>
+
+        <!-- Content Area -->
+        <div class="flex-1 w-full overflow-hidden">
+            
+            <!-- SECTION: Pathophysiology -->
+            <div id="section-patho" class="content-section animate-fadeIn space-y-6">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                    <h2 class="text-2xl font-bold text-slate-800 mb-4 flex items-center">
+                        <svg class="svg-icon w-6 h-6 mr-2 text-rose-500" viewBox="0 0 24 24">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                        </svg>
+                        Pathophysiological Basis
+                    </h2>
+                    <p class="text-slate-600 mb-6">
+                        Building on the principles of oxygen supply and demand and plaque biology, Chronic Coronary Syndromes (CCS) occur when these mechanisms produce a stable, predictable pattern of ischemia.
+                    </p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-slate-50 p-5 rounded-xl border border-slate-100 hover:shadow-md transition-shadow">
+                            <h3 class="font-semibold text-slate-800 mb-2">Plaque Stability vs. Vulnerability</h3>
+                            <p class="text-sm text-slate-600">
+                                Unlike ACS (driven by vulnerable, ruptured plaques), CCS is driven by a <strong class="text-rose-600">stable, fibrotic atherosclerotic plaque</strong>. This fixed narrowing allows adequate rest flow but critically limits coronary flow reserve during exertion.
+                            </p>
+                        </div>
+                        
+                        <div class="bg-slate-50 p-5 rounded-xl border border-slate-100 hover:shadow-md transition-shadow">
+                            <h3 class="font-semibold text-slate-800 mb-2">Oxygen Supply & Demand</h3>
+                            <p class="text-sm text-slate-600">
+                                Symptoms appear when myocardial oxygen demand (heart rate, contractility, wall stress) <strong class="text-rose-600">exceeds maximal flow</strong> across the fixed stenosis. Ischemia is transient, subendocardial, and resolves with rest.
+                            </p>
+                        </div>
+                        
+                        <div class="bg-slate-50 p-5 rounded-xl border border-slate-100 hover:shadow-md transition-shadow">
+                            <h3 class="font-semibold text-slate-800 mb-2">Coronary Steal Physiology</h3>
+                            <p class="text-sm text-slate-600">
+                                Distal to a stenosis, vessels are maximally dilated at rest. Potent vasodilators (adenosine) dilate healthy vessels, creating a path of least resistance that <strong class="text-rose-600">"steals" blood away</strong> from diseased beds, provoking ischemia.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION: Clinical Recognition -->
+            <div id="section-clinical" class="content-section hidden space-y-6">
+                <!-- Interactive Angina Calculator -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                    <h2 class="text-2xl font-bold text-slate-800 mb-4 flex items-center">
+                        <svg class="svg-icon w-6 h-6 mr-2 text-blue-500" viewBox="0 0 24 24">
+                            <path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/>
+                            <path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4"/>
+                            <circle cx="20" cy="10" r="2"/>
+                        </svg>
+                        Interactive Angina Classifier
+                    </h2>
+                    <p class="text-slate-600 mb-6">Select the criteria present in the patient to classify their angina.</p>
+                    
+                    <div class="flex flex-col md:flex-row gap-8">
+                        <div class="flex-1 space-y-3" id="criteria-container">
+                            <!-- Criterion 1 -->
+                            <button data-index="0" class="criterion-btn w-full text-left p-4 rounded-xl border-2 transition-all duration-200 flex items-center justify-between border-slate-200 hover:border-blue-300 bg-white">
+                                <span class="font-medium text-slate-700">Retrosternal chest discomfort (pressure, squeezing, heaviness)</span>
+                                <div class="check-container w-6 h-6 rounded-full border-2 flex items-center justify-center border-slate-300">
+                                    <svg class="check-icon hidden svg-icon w-4 h-4 text-white" viewBox="0 0 24 24">
+                                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                        <polyline points="22 4 12 14.01 9 11.01"/>
+                                    </svg>
+                                </div>
+                            </button>
+                            <!-- Criterion 2 -->
+                            <button data-index="1" class="criterion-btn w-full text-left p-4 rounded-xl border-2 transition-all duration-200 flex items-center justify-between border-slate-200 hover:border-blue-300 bg-white">
+                                <span class="font-medium text-slate-700">Provocation by physical exertion or emotional stress</span>
+                                <div class="check-container w-6 h-6 rounded-full border-2 flex items-center justify-center border-slate-300">
+                                    <svg class="check-icon hidden svg-icon w-4 h-4 text-white" viewBox="0 0 24 24">
+                                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                        <polyline points="22 4 12 14.01 9 11.01"/>
+                                    </svg>
+                                </div>
+                            </button>
+                            <!-- Criterion 3 -->
+                            <button data-index="2" class="criterion-btn w-full text-left p-4 rounded-xl border-2 transition-all duration-200 flex items-center justify-between border-slate-200 hover:border-blue-300 bg-white">
+                                <span class="font-medium text-slate-700">Relief by rest or short-acting nitrates within minutes</span>
+                                <div class="check-container w-6 h-6 rounded-full border-2 flex items-center justify-center border-slate-300">
+                                    <svg class="check-icon hidden svg-icon w-4 h-4 text-white" viewBox="0 0 24 24">
+                                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                        <polyline points="22 4 12 14.01 9 11.01"/>
+                                    </svg>
+                                </div>
+                            </button>
+                        </div>
+                        
+                        <div class="md:w-1/3 flex flex-col justify-center">
+                            <div id="calc-result-box" class="p-6 rounded-2xl border-2 text-center transition-colors duration-300 bg-green-100 text-green-800 border-green-200">
+                                <h3 id="calc-result-title" class="text-2xl font-bold mb-2">Non-cardiac chest pain</h3>
+                                <p id="calc-result-desc" class="font-medium opacity-80">Meets 0 or 1 criteria.</p>
+                            </div>
+                            
+                            <div class="mt-6 bg-slate-50 p-4 rounded-xl border border-slate-100 text-sm text-slate-600">
+                                <strong>Note:</strong> Atypical or entirely painless presentations (isolated exertional dyspnea, unusual fatigue, nausea) are particularly common in women, older adults, and patients with diabetes or CKD.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CCS Grading Scale -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                    <h2 class="text-xl font-bold text-slate-800 mb-4">Canadian Cardiovascular Society (CCS) Grading</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="group relative bg-slate-50 hover:bg-blue-50 p-5 rounded-xl border border-slate-100 hover:border-blue-200 transition-all cursor-default overflow-hidden">
+                            <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                                <span class="text-6xl font-black italic">I</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-800 mb-2 relative z-10">Class I</h3>
+                            <p class="text-sm text-slate-600 relative z-10">Ordinary activity does not cause angina; symptoms only occur with rapid, prolonged, or strenuous exertion.</p>
+                        </div>
+                        <div class="group relative bg-slate-50 hover:bg-blue-50 p-5 rounded-xl border border-slate-100 hover:border-blue-200 transition-all cursor-default overflow-hidden">
+                            <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                                <span class="text-6xl font-black italic">II</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-800 mb-2 relative z-10">Class II</h3>
+                            <p class="text-sm text-slate-600 relative z-10">Slight limitation of ordinary activity; occurs walking rapidly, climbing stairs after meals, or under emotional stress.</p>
+                        </div>
+                        <div class="group relative bg-slate-50 hover:bg-blue-50 p-5 rounded-xl border border-slate-100 hover:border-blue-200 transition-all cursor-default overflow-hidden">
+                            <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                                <span class="text-6xl font-black italic">III</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-800 mb-2 relative z-10">Class III</h3>
+                            <p class="text-sm text-slate-600 relative z-10">Marked limitation; angina occurs with walking just one or two blocks or climbing a single flight of stairs.</p>
+                        </div>
+                        <div class="group relative bg-slate-50 hover:bg-blue-50 p-5 rounded-xl border border-slate-100 hover:border-blue-200 transition-all cursor-default overflow-hidden">
+                            <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                                <span class="text-6xl font-black italic">IV</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-800 mb-2 relative z-10">Class IV</h3>
+                            <p class="text-sm text-slate-600 relative z-10">Inability to carry out minimal physical activity without discomfort, or angina occurring at rest.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION: Diagnostics -->
+            <div id="section-diagnostics" class="content-section hidden space-y-6">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                    <h2 class="text-2xl font-bold text-slate-800 mb-4 flex items-center">
+                        <svg class="svg-icon w-6 h-6 mr-2 text-indigo-500" viewBox="0 0 24 24">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                        </svg>
+                        Diagnostic Testing
+                    </h2>
+                    <p class="text-slate-600 mb-6">Tests expose flow reserve limitations by increasing myocardial demand or via pharmacological vasodilation.</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        
+                        <div class="bg-slate-50 p-5 rounded-xl border-l-4 border-l-slate-400">
+                            <h3 class="text-lg font-bold text-slate-800 mb-2">Resting ECG & Biomarkers</h3>
+                            <ul class="list-disc pl-5 space-y-1 text-sm text-slate-600">
+                                <li>May reveal prior infarction, baseline ST-T abnormalities, or conduction disease.</li>
+                                <li>Frequently <strong>completely normal</strong> between ischemic attacks.</li>
+                                <li>High-sensitivity troponin is usually normal (not a screening tool, used to rule out ACS).</li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-indigo-50 p-5 rounded-xl border-l-4 border-l-indigo-400">
+                            <h3 class="text-lg font-bold text-indigo-900 mb-2">Stress Testing & Imaging</h3>
+                            <ul class="list-disc pl-5 space-y-2 text-sm text-indigo-800">
+                                <li><strong>Exercise ECG:</strong> Looks for horizontal/downsloping ST depression. Lower accuracy if baseline ECG is abnormal.</li>
+                                <li><strong>Stress Echo:</strong> Looks for new/worsening regional wall-motion abnormalities.</li>
+                                <li><strong>Nuclear Perfusion:</strong> Identifies reversible (ischemia) vs fixed (scar) defects.</li>
+                            </ul>
+                            <div class="mt-3 bg-white p-3 rounded-lg text-xs border border-indigo-100 flex items-start">
+                                <svg class="svg-icon w-4 h-4 text-amber-500 mr-2 flex-shrink-0 mt-0.5" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <line x1="12" x2="12" y1="8" y2="12"/>
+                                    <line x1="12" x2="12.01" y1="16" y2="16"/>
+                                </svg>
+                                <span>Vasodilator stress agents (dipyridamole, adenosine) are <strong>contraindicated</strong> in active asthma, severe bradycardia/heart block, and hypotension.</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-teal-50 p-5 rounded-xl border-l-4 border-l-teal-400">
+                            <h3 class="text-lg font-bold text-teal-900 mb-2">Coronary CT Angiography (CCTA)</h3>
+                            <p class="text-sm text-teal-800">
+                                Provides high-resolution, non-invasive anatomical visualization of the coronary lumen and plaque burden. Highly effective for <strong>excluding</strong> obstructive CAD in appropriately selected patients.
+                            </p>
+                        </div>
+
+                        <div class="bg-rose-50 p-5 rounded-xl border-l-4 border-l-rose-400">
+                            <h3 class="text-lg font-bold text-rose-900 mb-2">Invasive Coronary Angiography</h3>
+                            <p class="text-sm text-rose-800 mb-2">
+                                The <strong>reference standard</strong> for defining coronary anatomy. Reserved for severe/refractory symptoms, high-risk non-invasive test results, or planned revascularization.
+                            </p>
+                            <p class="text-sm text-rose-800">
+                                <strong>Fractional Flow Reserve (FFR):</strong> Measured during angiography to determine the true physiological significance of intermediate lesions.
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION: Management -->
+            <div id="section-management" class="content-section hidden space-y-6">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                    <h2 class="text-2xl font-bold text-slate-800 mb-4 flex items-center">
+                        <svg class="svg-icon w-6 h-6 mr-2 text-emerald-500" viewBox="0 0 24 24">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/>
+                        </svg>
+                        Management Strategy
+                    </h2>
+                    <p class="text-slate-600 mb-6">Management combines immediate symptom relief with long-term prevention of atherothrombotic events.</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <!-- Event Prevention -->
+                        <div class="border border-slate-200 rounded-xl overflow-hidden flex flex-col">
+                            <div class="bg-slate-100 p-4 border-b border-slate-200">
+                                <h3 class="font-bold text-slate-800 flex items-center">
+                                    <svg class="svg-icon w-5 h-5 mr-2 text-emerald-600" viewBox="0 0 24 24">
+                                        <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+                                    </svg>
+                                    Event Prevention (Disease-Modifying)
+                                </h3>
+                            </div>
+                            <div class="p-4 bg-white space-y-3 flex-1">
+                                <p class="text-sm text-slate-600">Aims to halt plaque progression and prevent thrombosis.</p>
+                                <ul class="space-y-2 text-sm">
+                                    <li class="flex items-start">
+                                        <svg class="svg-icon w-4 h-4 text-emerald-500 mr-2 flex-shrink-0 mt-0.5" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                        <span><strong>Lifestyle:</strong> Smoking cessation, weight management.</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg class="svg-icon w-4 h-4 text-emerald-500 mr-2 flex-shrink-0 mt-0.5" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                        <span><strong>Statins:</strong> High-intensity to lower LDL cholesterol.</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg class="svg-icon w-4 h-4 text-emerald-500 mr-2 flex-shrink-0 mt-0.5" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                        <span><strong>Antiplatelet:</strong> Single-therapy (Aspirin typically) unless dual indication exists.</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <svg class="svg-icon w-4 h-4 text-emerald-500 mr-2 flex-shrink-0 mt-0.5" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                        <span><strong>ACEi/ARBs:</strong> Recommended, especially with HTN, DM, CKD, or LV dysfunction.</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Symptom Relief -->
+                        <div class="border border-slate-200 rounded-xl overflow-hidden flex flex-col">
+                            <div class="bg-slate-100 p-4 border-b border-slate-200">
+                                <h3 class="font-bold text-slate-800 flex items-center">
+                                    <svg class="svg-icon w-5 h-5 mr-2 text-blue-600" viewBox="0 0 24 24">
+                                        <path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/>
+                                        <path d="m8.5 8.5 7 7"/>
+                                    </svg>
+                                    Symptom Relief (Anti-Anginal)
+                                </h3>
+                            </div>
+                            <div class="p-4 bg-white space-y-3 flex-1">
+                                <ul class="space-y-3 text-sm">
+                                    <li><strong class="text-blue-800">Beta-blockers:</strong> First-line. Reduce HR & contractility (lowers demand, prolongs diastolic perfusion).</li>
+                                    <li><strong class="text-blue-800">Calcium-Channel Blockers (CCBs):</strong> Excellent alternatives/add-ons that induce vasodilation.</li>
+                                    <li><strong class="text-blue-800">Nitrates:</strong> Dilate capacitance veins, decreasing venous return (preload) and ventricular wall stress.</li>
+                                    <li><strong class="text-blue-800">Ranolazine:</strong> For refractory angina. Reduces intracellular calcium overload in myocytes.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Revascularization -->
+                    <div class="bg-amber-50 p-5 rounded-xl border border-amber-100">
+                        <h3 class="text-lg font-bold text-amber-900 mb-3">Revascularization Indications</h3>
+                        <p class="text-sm text-amber-800 mb-4">Indicated to improve symptoms when optimal medical therapy fails, or to improve survival in patients with high-risk anatomy.</p>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="bg-white p-4 rounded-lg shadow-sm">
+                                <h4 class="font-bold text-slate-800 border-b pb-2 mb-2">PCI</h4>
+                                <p class="text-sm text-slate-600">Percutaneous Coronary Intervention is favored for focal, less complex disease where rapid recovery is desired.</p>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg shadow-sm">
+                                <h4 class="font-bold text-slate-800 border-b pb-2 mb-2">CABG</h4>
+                                <p class="text-sm text-slate-600">Coronary Artery Bypass Grafting is preferred for left main disease, complex multivessel disease (especially in diabetics), or if concomitant cardiac surgery is required.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- SECTION: Special Syndromes -->
+            <div id="section-special" class="content-section hidden space-y-6">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                    <h2 class="text-2xl font-bold text-slate-800 mb-4 flex items-center">
+                        <svg class="svg-icon w-6 h-6 mr-2 text-violet-500" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="12" x2="12" y1="8" y2="12"/>
+                            <line x1="12" x2="12.01" y1="16" y2="16"/>
+                        </svg>
+                        Special Syndromes
+                    </h2>
+                    
+                    <div class="space-y-6">
+                        <!-- Prinzmetal -->
+                        <div class="flex flex-col md:flex-row bg-violet-50 rounded-xl overflow-hidden border border-violet-100">
+                            <div class="md:w-1/3 bg-violet-100 p-6 flex flex-col justify-center">
+                                <h3 class="text-xl font-bold text-violet-900">Prinzmetal (Variant) Angina</h3>
+                            </div>
+                            <div class="md:w-2/3 p-6 space-y-3">
+                                <p class="text-sm text-slate-700">
+                                    Caused by <strong>transient vasospasm</strong> of epicardial coronary arteries, often occurring at rest or at night. Produces transient ST-segment elevation on ECG.
+                                </p>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                                    <div>
+                                        <strong class="text-slate-800 block mb-1">Patient Profile & Triggers:</strong>
+                                        <ul class="list-disc pl-4 text-slate-600">
+                                            <li>Young smokers lacking major risk factors</li>
+                                            <li>Cocaine, alcohol, triptans</li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <strong class="text-slate-800 block mb-1">Treatment & Contraindications:</strong>
+                                        <ul class="list-disc pl-4 text-slate-600">
+                                            <li><strong>Treat:</strong> CCBs (prevent spasm) & nitrates.</li>
+                                            <li><strong class="text-rose-600">Avoid:</strong> Beta-blockers (leave alpha vasoconstriction unopposed) and Aspirin (aggravates attacks).</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Microvascular -->
+                        <div class="flex flex-col md:flex-row bg-slate-50 rounded-xl overflow-hidden border border-slate-200">
+                            <div class="md:w-1/3 bg-slate-200 p-6 flex flex-col justify-center">
+                                <h3 class="text-xl font-bold text-slate-800">Microvascular & Non-Obstructive Angina</h3>
+                                <p class="text-xs text-slate-500 mt-1">(INOCA / ANOCA)</p>
+                            </div>
+                            <div class="md:w-2/3 p-6 space-y-3">
+                                <p class="text-sm text-slate-700">
+                                    Patients present with classic angina and objective evidence of ischemia, but have <strong>absolutely no flow-limiting epicardial blockages</strong> on angiogram.
+                                </p>
+                                <div class="text-sm">
+                                    <strong class="text-slate-800 block mb-1">Pathophysiology & Management:</strong>
+                                    <p class="text-slate-600 mb-2">Results from impaired small-vessel dilation or abnormal microvascular constriction.</p>
+                                    <p class="text-slate-600">Management requires careful risk-factor control and tailored antianginal therapy based on the dominant mechanism (impaired reserve vs. hyper-constriction).</p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Tab Navigation Logic ---
+            const tabs = document.querySelectorAll('.nav-tab');
+            const sections = document.querySelectorAll('.content-section');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const targetId = tab.getAttribute('data-target');
+
+                    // Reset all tabs to inactive state
+                    tabs.forEach(t => {
+                        t.className = 'nav-tab flex items-center p-3 rounded-xl transition-all duration-200 whitespace-nowrap border bg-white text-slate-600 hover:bg-slate-100 border-slate-200';
+                        t.querySelector('.svg-icon').className.baseVal = 'svg-icon w-5 h-5 mr-3 text-slate-400';
+                    });
+
+                    // Set clicked tab to active state
+                    tab.className = 'nav-tab flex items-center p-3 rounded-xl transition-all duration-200 whitespace-nowrap border bg-blue-600 text-white border-blue-600 shadow-md transform scale-[1.02]';
+                    tab.querySelector('.svg-icon').className.baseVal = 'svg-icon w-5 h-5 mr-3 text-white';
+
+                    // Hide all sections, remove animation class
+                    sections.forEach(s => {
+                        s.classList.add('hidden');
+                        s.classList.remove('animate-fadeIn');
+                    });
+
+                    // Show target section and trigger animation
+                    const targetSection = document.getElementById(targetId);
+                    targetSection.classList.remove('hidden');
+                    // Force a reflow to restart the CSS animation
+                    void targetSection.offsetWidth;
+                    targetSection.classList.add('animate-fadeIn');
+                });
+            });
+
+            // --- Interactive Angina Calculator Logic ---
+            const criteriaState = [false, false, false];
+            const criteriaBtns = document.querySelectorAll('.criterion-btn');
+            
+            const resultBox = document.getElementById('calc-result-box');
+            const resultTitle = document.getElementById('calc-result-title');
+            const resultDesc = document.getElementById('calc-result-desc');
+
+            criteriaBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const index = parseInt(btn.getAttribute('data-index'));
+                    criteriaState[index] = !criteriaState[index]; // Toggle state
+                    
+                    const isActive = criteriaState[index];
+                    const textSpan = btn.querySelector('span');
+                    const checkContainer = btn.querySelector('.check-container');
+                    const checkIcon = btn.querySelector('.check-icon');
+
+                    // Update Button Visuals
+                    if (isActive) {
+                        btn.classList.add('border-blue-500', 'bg-blue-50');
+                        btn.classList.remove('border-slate-200', 'hover:border-blue-300', 'bg-white');
+                        textSpan.classList.add('text-blue-900');
+                        textSpan.classList.remove('text-slate-700');
+                        checkContainer.classList.add('border-blue-500', 'bg-blue-500');
+                        checkContainer.classList.remove('border-slate-300');
+                        checkIcon.classList.remove('hidden');
+                    } else {
+                        btn.classList.remove('border-blue-500', 'bg-blue-50');
+                        btn.classList.add('border-slate-200', 'hover:border-blue-300', 'bg-white');
+                        textSpan.classList.remove('text-blue-900');
+                        textSpan.classList.add('text-slate-700');
+                        checkContainer.classList.remove('border-blue-500', 'bg-blue-500');
+                        checkContainer.classList.add('border-slate-300');
+                        checkIcon.classList.add('hidden');
+                    }
+
+                    updateCalculatorResult();
+                });
+            });
+
+            function updateCalculatorResult() {
+                // Count true values
+                const score = criteriaState.filter(Boolean).length;
+                
+                // Base classes for the result box
+                let boxClasses = 'p-6 rounded-2xl border-2 text-center transition-colors duration-300 ';
+
+                if (score === 3) {
+                    resultTitle.textContent = "Typical Angina";
+                    resultDesc.textContent = "Meets all 3 criteria.";
+                    boxClasses += 'bg-rose-100 text-rose-800 border-rose-200';
+                } else if (score === 2) {
+                    resultTitle.textContent = "Atypical Angina";
+                    resultDesc.textContent = "Meets 2 of 3 criteria.";
+                    boxClasses += 'bg-amber-100 text-amber-800 border-amber-200';
+                } else {
+                    resultTitle.textContent = "Non-cardiac chest pain";
+                    resultDesc.textContent = "Meets 0 or 1 criteria.";
+                    boxClasses += 'bg-green-100 text-green-800 border-green-200';
+                }
+
+                resultBox.className = boxClasses;
+            }
+        });
+    </script>
+</body>
+</html>
