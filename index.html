@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IHD Mastering</title>
+    <style>
+        :root {
+            --primary: #1e3a8a; /* Deep medical blue */
+            --secondary: #dc2626; /* Alert red for cardiology */
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #334155;
+            --text-light: #94a3b8;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, #172554 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            letter-spacing: -0.025em;
+        }
+
+        header p {
+            font-size: 1.125rem;
+            color: #bfdbfe;
+            margin-top: 0.5rem;
+            max-width: 600px;
+            margin-inline: auto;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: -2rem auto 3rem;
+            padding: 0 1.5rem;
+            position: relative;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-color: var(--primary);
+        }
+
+        .card-header {
+            background-color: var(--card-bg);
+            padding: 1.5rem 1.5rem 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 2px solid transparent;
+        }
+
+        .card-number {
+            background: var(--secondary);
+            color: white;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin: 0;
+        }
+
+        .card-body {
+            padding: 0.5rem 1.5rem 1.5rem;
+            color: #64748b;
+            flex-grow: 1;
+        }
+
+        /* Highlight the critical ACS/MI modules with red accents */
+        .card:nth-child(3) .card-number, .card:nth-child(4) .card-number {
+            background: var(--secondary);
+            box-shadow: 0 0 0 4px #fee2e2;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>IHD Mastering</h1>
+        <p>A structured curriculum for Ischemic Heart Disease evaluation, diagnosis, and management.</p>
+    </header>
+
+    <div class="container">
+        <div class="grid">
+            
+            <a href="1.html" class="card">
+                <div class="card-header">
+                    <span class="card-number">1</span>
+                    <h2 class="card-title">Foundations & Pathophysiology</h2>
+                </div>
+                <div class="card-body">
+                    Atherosclerosis formation, endothelial dysfunction, coronary anatomy, and the ischemic cascade.
+                </div>
+            </a>
+
+            <a href="2.html" class="card">
+                <div class="card-header">
+                    <span class="card-number">2</span>
+                    <h2 class="card-title">Chronic Coronary Syndromes (CCS)</h2>
+                </div>
+                <div class="card-body">
+                    Stable angina, risk stratification, non-invasive testing (stress testing, CTA), and long-term medical therapy.
+                </div>
+            </a>
+
+            <a href="3.html" class="card">
+                <div class="card-header">
+                    <span class="card-number">3</span>
+                    <h2 class="card-title">Acute Coronary Syndromes (ACS)</h2>
+                </div>
+                <div class="card-body">
+                    Unstable angina and NSTEMI. Plaque rupture mechanisms, risk scores (TIMI, GRACE), and acute pharmacological management.
+                </div>
+            </a>
+
+            <a href="4.html" class="card">
+                <div class="card-header">
+                    <span class="card-number">4</span>
+                    <h2 class="card-title">Myocardial Infarction (MI)</h2>
+                </div>
+                <div class="card-body">
+                    STEMI criteria, reperfusion timelines (PCI vs. Fibrinolysis), mechanical complications, and cardiogenic shock.
+                </div>
+            </a>
+
+            <a href="5.html" class="card">
+                <div class="card-header">
+                    <span class="card-number">5</span>
+                    <h2 class="card-title">Secondary Prevention & Follow-up</h2>
+                </div>
+                <div class="card-body">
+                    Post-MI lipid management, DAPT duration, beta-blockers, ACE inhibitors, and cardiac rehabilitation.
+                </div>
+            </a>
+
+        </div>
+    </div>
+
+</body>
+</html>
