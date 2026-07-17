@@ -3,35 +3,26 @@
     const currentPath = window.location.pathname.split("/").pop() || "index.html";
     const currentIndex = pages.indexOf(currentPath);
 
-    // Apply dark mode immediately to prevent flash
-    if (localStorage.getItem('theme') === 'dark') {
-        document.body.classList.add('dark-mode');
-    }
+    // Apply saved theme immediately
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.body.setAttribute("data-theme", savedTheme);
 
     let navHTML = '<div class="nav-container">';
-    
-    // Previous Button
-    if (currentIndex > 0) {
-        navHTML += `<a href="${pages[currentIndex - 1]}" class="nav-btn">« Previous</a>`;
-    }
-    
-    // Home Button
+    if (currentIndex > 0) navHTML += `<a href="${pages[currentIndex - 1]}" class="nav-btn">« Previous</a>`;
     navHTML += `<a href="index.html" class="nav-btn">Home</a>`;
-    
-    // Toggle Theme Button
-    navHTML += `<button class="nav-btn" onclick="toggleTheme()">Dark Mode</button>`;
-    
-    // Next Button
-    if (currentIndex < pages.length - 1) {
-        navHTML += `<a href="${pages[currentIndex + 1]}" class="nav-btn">Next »</a>`;
-    }
-    
+    navHTML += `<button id="theme-toggle" class="nav-btn">Toggle Dark Mode</button>`;
+    if (currentIndex < pages.length - 1) navHTML += `<a href="${pages[currentIndex + 1]}" class="nav-btn">Next »</a>`;
     navHTML += '</div>';
+    
     document.write(navHTML);
-})();
 
-// Global function for the toggle
-function toggleTheme() {
-    document.body.classList.toggle('dark-mode');
-    localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
-}
+    // Add event listener after document is ready
+    setTimeout(() => {
+        document.getElementById('theme-toggle').addEventListener('click', () => {
+            const current = document.body.getAttribute("data-theme");
+            const next = current === "dark" ? "light" : "dark";
+            document.body.setAttribute("data-theme", next);
+            localStorage.setItem('theme', next);
+        });
+    }, 0);
+})();
