@@ -32,3 +32,39 @@ body[data-theme="dark"] {
     border: none;
     cursor: pointer;
 }
+
+/* Navigation Container */
+.nav-container {
+    margin-top: 50px;
+    padding: 20px;
+    border-top: 1px solid #444;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    align-items: center;
+}
+
+/* Button Styling */
+.nav-btn {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white !important;
+    text-decoration: none;
+    border-radius: 25px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s;
+}
+
+.nav-btn:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+/* Dark mode specific button adjustment */
+body.dark-mode .nav-btn {
+    background-color: #bb86fc;
+    color: #121212 !important;
+}
