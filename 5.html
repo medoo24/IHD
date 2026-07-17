@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coronary Disease Secondary Prevention Guidelines</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+        
+        .tab-btn {
+            transition: all 0.2s ease;
+        }
+        .tab-btn.active {
+            background-color: #eff6ff;
+            color: #1d4ed8;
+            border-left-width: 4px;
+            border-left-color: #2563eb;
+            font-weight: 600;
+        }
+        .tool-result {
+            transition: all 0.3s ease;
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+        }
+        .tool-result.show {
+            max-height: 300px;
+            opacity: 1;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <header class="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3 text-blue-700">
+                <i class="ph-fill ph-heartbeat text-3xl"></i>
+                <h1 class="font-bold text-xl hidden sm:block text-slate-800">CardioGuide <span class="text-blue-600 font-medium text-sm ml-2 px-2 py-1 bg-blue-50 rounded-full border border-blue-100">Interactive Guidelines</span></h1>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="text-sm font-medium text-slate-500">Progress Tracker</div>
+                <div class="w-32 sm:w-48 h-2 bg-slate-100 rounded-full overflow-hidden">
+                    <div id="progress-bar" class="h-full bg-blue-600 rounded-full transition-all duration-500 w-0"></div>
+                </div>
+                <span id="progress-text" class="text-sm font-bold text-blue-700">0%</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 flex flex-col md:flex-row gap-8">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="w-full md:w-64 lg:w-72 flex-shrink-0">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-3 sticky top-24">
+                <nav class="flex flex-col space-y-1" id="nav-tabs">
+                    <button onclick="switchTab('antithrombotic')" class="tab-btn active w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg text-slate-600 hover:bg-slate-50" data-target="antithrombotic">
+                        <i class="ph ph-drop text-xl"></i>
+                        <span>Antithrombotic Therapy</span>
+                    </button>
+                    <button onclick="switchTab('lipid')" class="tab-btn w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg text-slate-600 hover:bg-slate-50" data-target="lipid">
+                        <i class="ph ph-pill text-xl"></i>
+                        <span>Lipid Management</span>
+                    </button>
+                    <button onclick="switchTab('neurohormonal')" class="tab-btn w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg text-slate-600 hover:bg-slate-50" data-target="neurohormonal">
+                        <i class="ph ph-shield-check text-xl"></i>
+                        <span>Neurohormonal & LV</span>
+                    </button>
+                    <button onclick="switchTab('device')" class="tab-btn w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg text-slate-600 hover:bg-slate-50" data-target="device">
+                        <i class="ph ph-activity text-xl"></i>
+                        <span>Device Therapy</span>
+                    </button>
+                    <button onclick="switchTab('lifestyle')" class="tab-btn w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg text-slate-600 hover:bg-slate-50" data-target="lifestyle">
+                        <i class="ph ph-person-simple-run text-xl"></i>
+                        <span>Lifestyle Modifications</span>
+                    </button>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Content Area -->
+        <div class="flex-grow min-w-0" id="content-area">
+            
+            <section id="antithrombotic" class="content-section fade-in">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="p-6 md:p-8 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-600">
+                                <i class="ph-fill ph-drop text-xl"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold text-slate-800">Antithrombotic Therapy</h2>
+                        </div>
+                        <p class="text-slate-500">Guidelines for preventing atherothrombotic events.</p>
+                    </div>
+                    
+                    <div class="p-6 md:p-8 space-y-6">
+                        <div>
+                            <h3 class="text-lg font-semibold text-slate-800 mb-2">Single Antiplatelet for Stable Disease</h3>
+                            <p class="text-slate-600 leading-relaxed bg-slate-50 p-4 rounded-lg border border-slate-100">
+                                For patients with established chronic coronary disease who do not have a recent acute event or intervention, long-term single antiplatelet therapy (most commonly aspirin) is the standard of care to prevent atherothrombotic events, provided the patient does not have a high bleeding risk.
+                            </p>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-lg font-semibold text-slate-800 mb-2">Dual Antiplatelet Therapy (DAPT) Duration & Selection</h3>
+                            <p class="text-slate-600 leading-relaxed">
+                                DAPT (aspirin + P2Y12 receptor inhibitor) is indicated after an acute coronary syndrome (ACS) or percutaneous coronary intervention (PCI) to prevent stent thrombosis and spontaneous recurrent atherothrombotic events.
+                                <br><br>
+                                <span class="font-medium text-slate-700">Drug Selection:</span> Ticagrelor and prasugrel offer more potent and predictable platelet inhibition and are generally preferred over clopidogrel for suitable ACS patients undergoing PCI.
+                            </p>
+                        </div>
+
+                        <!-- Interactive Tool: DAPT Duration -->
+                        <div class="mt-8 border border-blue-200 bg-blue-50/30 rounded-xl p-6">
+                            <div class="flex items-center gap-2 mb-4">
+                                <i class="ph-fill ph-calculator text-blue-600 text-xl"></i>
+                                <h4 class="font-bold text-blue-900">DAPT Duration Assistant</h4>
+                            </div>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">Has the patient had a recent Acute Coronary Syndrome (ACS) or Percutaneous Coronary Intervention (PCI)?</label>
+                                    <select id="dapt-acs" class="w-full rounded-lg border-slate-300 border p-2.5 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+                                        <option value="">Select an option...</option>
+                                        <option value="yes">Yes, recent ACS or PCI</option>
+                                        <option value="no">No, stable chronic coronary disease</option>
+                                    </select>
+                                </div>
+                                <div id="dapt-bleeding-container" class="hidden">
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">What is the patient's bleeding vs. ischemic risk profile?</label>
+                                    <select id="dapt-risk" class="w-full rounded-lg border-slate-300 border p-2.5 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+                                        <option value="">Select risk profile...</option>
+                                        <option value="low">Low bleeding risk (Default)</option>
+                                        <option value="high_bleed">High bleeding risk</option>
+                                        <option value="high_ischemic">High ischemic risk & acceptably low bleeding risk</option>
+                                    </select>
+                                </div>
+                                <button onclick="calculateDAPT()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">Generate Recommendation</button>
+                                
+                                <div id="dapt-result" class="tool-result bg-white p-4 rounded-lg border border-blue-200 shadow-sm">
+                                    <div class="flex gap-3">
+                                        <i class="ph-fill ph-info text-blue-500 text-xl flex-shrink-0 mt-0.5"></i>
+                                        <p id="dapt-result-text" class="text-slate-700 font-medium"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="lipid" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="p-6 md:p-8 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600">
+                                <i class="ph-fill ph-pill text-xl"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold text-slate-800">Lipid Management</h2>
+                        </div>
+                        <p class="text-slate-500">Secondary prevention through cholesterol control.</p>
+                    </div>
+                    
+                    <div class="p-6 md:p-8 space-y-6">
+                        <div>
+                            <h3 class="text-lg font-semibold text-slate-800 mb-2">High-Intensity Statins</h3>
+                            <p class="text-slate-600 leading-relaxed bg-slate-50 p-4 rounded-lg border border-slate-100">
+                                High-intensity or maximally tolerated statin therapy is a foundational component of secondary prevention. Statins inhibit hepatic cholesterol synthesis, lowering LDL cholesterol, decreasing vascular inflammation, improving endothelial function, and promoting plaque stabilization to prevent rupture.
+                            </p>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-lg font-semibold text-slate-800 mb-2">Thresholds for Non-Statin Additions</h3>
+                            <p class="text-slate-600 leading-relaxed">
+                                Following an ACS, a fasting lipid panel should be repeated 4 to 8 weeks after therapy initiation/adjustment. If LDL cholesterol remains at or above <strong>70 mg/dL</strong> despite maximally tolerated statin therapy, guidelines recommend adding non-statin therapies.
+                                <br><br>
+                                <span class="inline-flex items-center gap-1 px-2 py-1 bg-green-50 text-green-700 rounded border border-green-200 text-sm font-medium mr-2">Option 1: Ezetimibe</span> Decreases intestinal cholesterol absorption.<br>
+                                <span class="inline-flex items-center gap-1 px-2 py-1 bg-purple-50 text-purple-700 rounded border border-purple-200 text-sm font-medium mt-2">Option 2: PCSK9 Inhibitors</span> Preserve hepatic LDL receptors for profound LDL reduction.
+                            </p>
+                        </div>
+
+                        <!-- Interactive Tool: Lipid Target -->
+                        <div class="mt-8 border border-yellow-200 bg-yellow-50/30 rounded-xl p-6">
+                            <div class="flex items-center gap-2 mb-4">
+                                <i class="ph-fill ph-target text-yellow-600 text-xl"></i>
+                                <h4 class="font-bold text-yellow-900">LDL Target Evaluator</h4>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">Current LDL-C (mg/dL)</label>
+                                    <input type="number" id="lipid-ldl" placeholder="e.g. 85" class="w-full rounded-lg border-slate-300 border p-2.5 bg-white focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">On Maximally Tolerated Statin?</label>
+                                    <select id="lipid-statin" class="w-full rounded-lg border-slate-300 border p-2.5 bg-white focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 outline-none">
+                                        <option value="yes">Yes</option>
+                                        <option value="no">No</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button onclick="calculateLipid()" class="bg-yellow-600 hover:bg-yellow-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">Evaluate Therapy</button>
+                            
+                            <div id="lipid-result" class="tool-result bg-white p-4 rounded-lg border border-yellow-200 shadow-sm">
+                                <div class="flex gap-3">
+                                    <i id="lipid-icon" class="ph-fill ph-check-circle text-yellow-500 text-xl flex-shrink-0 mt-0.5"></i>
+                                    <p id="lipid-result-text" class="text-slate-700 font-medium"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="neurohormonal" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="p-6 md:p-8 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">
+                                <i class="ph-fill ph-shield-check text-xl"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold text-slate-800">Neurohormonal Blockade & LV Protection</h2>
+                        </div>
+                        <p class="text-slate-500">Protecting the myocardium and preventing remodeling.</p>
+                    </div>
+                    
+                    <div class="p-6 md:p-8 space-y-6">
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <!-- ACE/ARB -->
+                            <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
+                                <div class="flex items-center gap-2 mb-3 text-indigo-700">
+                                    <i class="ph-fill ph-flask text-xl"></i>
+                                    <h3 class="font-bold">ACE Inhibitors / ARBs</h3>
+                                </div>
+                                <p class="text-sm text-slate-600 mb-4">
+                                    Inhibit the renin-angiotensin-aldosterone system, reducing vasoconstriction, sodium retention, and maladaptive ventricular remodeling.
+                                </p>
+                                <div class="bg-indigo-50/50 p-3 rounded-lg border border-indigo-100">
+                                    <h4 class="text-xs font-bold text-indigo-900 uppercase tracking-wider mb-2">Strong Indications:</h4>
+                                    <ul class="text-sm text-slate-700 space-y-1">
+                                        <li class="flex items-start gap-2"><i class="ph-bold ph-check text-indigo-500 mt-0.5"></i>Reduced LV ejection fraction</li>
+                                        <li class="flex items-start gap-2"><i class="ph-bold ph-check text-indigo-500 mt-0.5"></i>Anterior myocardial infarction</li>
+                                        <li class="flex items-start gap-2"><i class="ph-bold ph-check text-indigo-500 mt-0.5"></i>Hypertension</li>
+                                        <li class="flex items-start gap-2"><i class="ph-bold ph-check text-indigo-500 mt-0.5"></i>Diabetes mellitus</li>
+                                        <li class="flex items-start gap-2"><i class="ph-bold ph-check text-indigo-500 mt-0.5"></i>Chronic kidney disease</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <!-- Beta Blockers -->
+                            <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
+                                <div class="flex items-center gap-2 mb-3 text-indigo-700">
+                                    <i class="ph-fill ph-heart text-xl"></i>
+                                    <h3 class="font-bold">Beta-Blockers</h3>
+                                </div>
+                                <p class="text-sm text-slate-600 mb-4">
+                                    Reduce myocardial oxygen demand by lowering heart rate, contractility, and blood pressure. Highly effective antianginal agents.
+                                </p>
+                                <div class="bg-orange-50 p-3 rounded-lg border border-orange-100 mb-3">
+                                    <p class="text-xs text-orange-800 font-medium flex gap-1.5"><i class="ph-fill ph-warning-circle text-base"></i>Routine long-term therapy is NOT automatically mandated for every patient with chronic coronary disease.</p>
+                                </div>
+                                <div class="bg-indigo-50/50 p-3 rounded-lg border border-indigo-100">
+                                    <h4 class="text-xs font-bold text-indigo-900 uppercase tracking-wider mb-2">Firmly Established For:</h4>
+                                    <ul class="text-sm text-slate-700 space-y-1">
+                                        <li class="flex items-start gap-2"><i class="ph-bold ph-check text-indigo-500 mt-0.5"></i>Recent myocardial infarction</li>
+                                        <li class="flex items-start gap-2"><i class="ph-bold ph-check text-indigo-500 mt-0.5"></i>Reduced LV ejection fraction</li>
+                                        <li class="flex items-start gap-2"><i class="ph-bold ph-check text-indigo-500 mt-0.5"></i>Concurrent hypertension</li>
+                                        <li class="flex items-start gap-2"><i class="ph-bold ph-check text-indigo-500 mt-0.5"></i>Arrhythmias</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="device" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="p-6 md:p-8 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center text-teal-600">
+                                <i class="ph-fill ph-activity text-xl"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold text-slate-800">Device Therapy Timing</h2>
+                        </div>
+                        <p class="text-slate-500">Implantable Cardioverter-Defibrillator (ICD) criteria and timing.</p>
+                    </div>
+                    
+                    <div class="p-6 md:p-8 space-y-6">
+                        <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+                            <p class="text-slate-700 leading-relaxed">
+                                An ICD continuously monitors ventricular rhythm to detect/terminate life-threatening arrhythmias, preventing sudden cardiac death.
+                            </p>
+                            <div class="mt-4 grid md:grid-cols-2 gap-4">
+                                <div class="bg-white p-4 rounded-lg border border-slate-200">
+                                    <h4 class="font-bold text-slate-800 mb-2 border-b pb-1">Primary Prevention Deferral</h4>
+                                    <p class="text-sm text-slate-600">
+                                        Decisions must be deferred until after recovery and optimization of medical therapy. <em>Reason: Stunned myocardium may spontaneously regain function early after MI or revascularization.</em>
+                                    </p>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg border border-slate-200">
+                                    <h4 class="font-bold text-slate-800 mb-2 border-b pb-1">Secondary Prevention</h4>
+                                    <p class="text-sm text-slate-600">
+                                        Indicated for survivors of cardiac arrest or sustained hemodynamically important ventricular tachycardia (if not caused solely by a reversible trigger).
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Interactive Tool: ICD Calculator -->
+                        <div class="mt-6 border border-teal-200 bg-teal-50/30 rounded-xl p-6">
+                            <div class="flex items-center gap-2 mb-4">
+                                <i class="ph-fill ph-stethoscope text-teal-600 text-xl"></i>
+                                <h4 class="font-bold text-teal-900">Primary Prevention ICD Eligibility Calculator</h4>
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-700 mb-1">Left Ventricular Ejection Fraction (EF %)</label>
+                                        <input type="number" id="icd-ef" placeholder="e.g. 32" class="w-full rounded-lg border-slate-300 border p-2.5 bg-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-700 mb-1">Symptom Status (NYHA Class)</label>
+                                        <select id="icd-nyha" class="w-full rounded-lg border-slate-300 border p-2.5 bg-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none">
+                                            <option value="">Select class...</option>
+                                            <option value="I">Class I (Asymptomatic)</option>
+                                            <option value="II_III">Class II or III (Symptomatic)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-700 mb-1">Days Post Myocardial Infarction</label>
+                                        <input type="number" id="icd-mi" placeholder="Leave blank if no recent MI" class="w-full rounded-lg border-slate-300 border p-2.5 bg-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-700 mb-1">Months Post Revascularization</label>
+                                        <input type="number" id="icd-revasc" placeholder="Leave blank if none recent" class="w-full rounded-lg border-slate-300 border p-2.5 bg-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none">
+                                    </div>
+                                </div>
+                                <button onclick="calculateICD()" class="bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">Check Indication</button>
+                                
+                                <div id="icd-result" class="tool-result bg-white p-4 rounded-lg border border-teal-200 shadow-sm">
+                                    <div class="flex gap-3">
+                                        <i id="icd-icon" class="ph-fill text-xl flex-shrink-0 mt-0.5"></i>
+                                        <p id="icd-result-text" class="text-slate-700 font-medium"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="lifestyle" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="p-6 md:p-8 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                                <i class="ph-fill ph-person-simple-run text-xl"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold text-slate-800">Lifestyle Modifications</h2>
+                        </div>
+                        <p class="text-slate-500">Crucial interventions beyond pharmacotherapy.</p>
+                    </div>
+                    
+                    <div class="p-6 md:p-8 space-y-6">
+                        <div class="grid lg:grid-cols-2 gap-6">
+                            <!-- Smoking Cessation -->
+                            <div>
+                                <h3 class="text-lg font-semibold text-slate-800 mb-2 flex items-center gap-2">
+                                    <i class="ph-fill ph-cigarette-slash text-red-500"></i> Smoking Cessation
+                                </h3>
+                                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 h-full">
+                                    <p class="text-sm text-slate-600 mb-3">
+                                        Halting tobacco exposure is critical. Smoking promotes endothelial dysfunction, oxidative stress, inflammation, vasoconstriction, thrombosis, and reduces blood oxygen capacity.
+                                    </p>
+                                    <div class="bg-white p-3 rounded border border-slate-200 shadow-sm mb-2">
+                                        <span class="text-xs font-bold text-green-600 uppercase tracking-wider block mb-1">Recommended:</span>
+                                        <span class="text-sm text-slate-700">Behavioral support and evidence-based pharmacotherapy.</span>
+                                    </div>
+                                    <div class="bg-white p-3 rounded border border-slate-200 shadow-sm">
+                                        <span class="text-xs font-bold text-red-500 uppercase tracking-wider block mb-1">Not Preferred First-Line:</span>
+                                        <span class="text-sm text-slate-700">Electronic cigarettes (due to uncertain long-term cardiovascular and pulmonary safety).</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Cardiac Rehab -->
+                            <div>
+                                <h3 class="text-lg font-semibold text-slate-800 mb-2 flex items-center gap-2">
+                                    <i class="ph-fill ph-barbell text-blue-500"></i> Cardiac Rehabilitation
+                                </h3>
+                                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 h-full">
+                                    <p class="text-sm text-slate-600 mb-3">
+                                        Structured cardiac rehabilitation programs are strongly recommended after an ACS or revascularization whenever feasible.
+                                    </p>
+                                    <div class="space-y-2">
+                                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Program Components:</p>
+                                        <div class="flex flex-wrap gap-2">
+                                            <span class="px-2 py-1 bg-white border border-slate-200 rounded text-xs text-slate-700 shadow-sm">Supervised Exercise</span>
+                                            <span class="px-2 py-1 bg-white border border-slate-200 rounded text-xs text-slate-700 shadow-sm">Risk-Factor Management</span>
+                                            <span class="px-2 py-1 bg-white border border-slate-200 rounded text-xs text-slate-700 shadow-sm">Nutritional Intervention</span>
+                                            <span class="px-2 py-1 bg-white border border-slate-200 rounded text-xs text-slate-700 shadow-sm">Medication Support</span>
+                                            <span class="px-2 py-1 bg-white border border-slate-200 rounded text-xs text-slate-700 shadow-sm">Psychological Care</span>
+                                            <span class="px-2 py-1 bg-white border border-slate-200 rounded text-xs text-slate-700 shadow-sm">Return-to-work Planning</span>
+                                        </div>
+                                    </div>
+                                    <div class="mt-4 p-2 bg-blue-50 rounded border border-blue-100">
+                                        <p class="text-xs text-blue-800 font-medium"><strong>Benefits:</strong> Improves functional capacity, endothelial function, autonomic balance, quality of life, and reduces recurrent cardiovascular morbidity.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Interactive Tool: Lifestyle Checklist -->
+                        <div class="mt-8 border border-green-200 bg-green-50/30 rounded-xl p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-2">
+                                    <i class="ph-fill ph-list-checks text-green-600 text-xl"></i>
+                                    <h4 class="font-bold text-green-900">Patient Action Plan Checklist</h4>
+                                </div>
+                                <span id="checklist-counter" class="text-sm font-bold text-green-700 bg-green-100 px-2 py-1 rounded">0/3 Completed</span>
+                            </div>
+                            
+                            <div class="space-y-3">
+                                <label class="flex items-center gap-3 p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:bg-slate-50 transition-colors">
+                                    <input type="checkbox" class="w-5 h-5 text-green-600 rounded border-gray-300 focus:ring-green-500 lifestyle-check" onchange="updateChecklist()">
+                                    <span class="text-slate-700">Enroll in structured cardiac rehabilitation program</span>
+                                </label>
+                                <label class="flex items-center gap-3 p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:bg-slate-50 transition-colors">
+                                    <input type="checkbox" class="w-5 h-5 text-green-600 rounded border-gray-300 focus:ring-green-500 lifestyle-check" onchange="updateChecklist()">
+                                    <span class="text-slate-700">Initiate evidence-based smoking cessation plan (if applicable)</span>
+                                </label>
+                                <label class="flex items-center gap-3 p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:bg-slate-50 transition-colors">
+                                    <input type="checkbox" class="w-5 h-5 text-green-600 rounded border-gray-300 focus:ring-green-500 lifestyle-check" onchange="updateChecklist()">
+                                    <span class="text-slate-700">Review nutritional plan and schedule psychological care follow-up</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <script>
+        // Track completed interactive tools for progress bar
+        let toolsCompleted = {
+            dapt: false,
+            lipid: false,
+            icd: false,
+            lifestyle: false
+        };
+
+        function updateProgress() {
+            const total = Object.keys(toolsCompleted).length;
+            const completed = Object.values(toolsCompleted).filter(v => v).length;
+            const percentage = Math.round((completed / total) * 100);
+            
+            document.getElementById('progress-bar').style.width = `${percentage}%`;
+            document.getElementById('progress-text').innerText = `${percentage}%`;
+        }
+
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            // Update buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if(btn.dataset.target === tabId) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // Update sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.add('hidden');
+                section.classList.remove('fade-in');
+            });
+
+            const activeSection = document.getElementById(tabId);
+            activeSection.classList.remove('hidden');
+            // Trigger reflow for animation
+            void activeSection.offsetWidth; 
+            activeSection.classList.add('fade-in');
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // DAPT Calculator Logic
+        document.getElementById('dapt-acs').addEventListener('change', function() {
+            const bleedContainer = document.getElementById('dapt-bleeding-container');
+            if (this.value === 'yes') {
+                bleedContainer.classList.remove('hidden');
+            } else {
+                bleedContainer.classList.add('hidden');
+            }
+        });
+
+        function calculateDAPT() {
+            const acs = document.getElementById('dapt-acs').value;
+            const risk = document.getElementById('dapt-risk').value;
+            const resultBox = document.getElementById('dapt-result');
+            const resultText = document.getElementById('dapt-result-text');
+
+            if (!acs) {
+                showResult(resultBox, resultText, "Please select whether the patient had a recent ACS or PCI.", "ph-warning", "text-orange-600");
+                return;
+            }
+
+            let recommendation = "";
+
+            if (acs === 'no') {
+                recommendation = "<strong>Recommendation: Single Antiplatelet Therapy</strong><br>For stable chronic coronary disease without recent events, long-term single antiplatelet therapy (commonly aspirin) is the standard of care (assuming no high bleeding risk).";
+            } else {
+                if (!risk) {
+                    showResult(resultBox, resultText, "Please select the bleeding/ischemic risk profile.", "ph-warning", "text-orange-600");
+                    return;
+                }
+                
+                if (risk === 'low') {
+                    recommendation = "<strong>Recommendation: Standard 12-Month DAPT</strong><br>Default duration is typically 12 months for low bleeding risk following ACS/PCI. Ticagrelor or prasugrel are generally preferred over clopidogrel.";
+                } else if (risk === 'high_bleed') {
+                    recommendation = "<strong>Recommendation: Shortened/De-escalated DAPT</strong><br>Due to high bleeding risks, DAPT duration may be highly individualized, shortened, or de-escalated.";
+                } else if (risk === 'high_ischemic') {
+                    recommendation = "<strong>Recommendation: Extended DAPT (>12 Months)</strong><br>Because the patient has high ischemic risk and acceptably low bleeding risk, extending DAPT beyond 12 months is indicated.";
+                }
+            }
+
+            showResult(resultBox, resultText, recommendation, "ph-info", "text-blue-600");
+            toolsCompleted.dapt = true;
+            updateProgress();
+        }
+
+        // Lipid Calculator Logic
+        function calculateLipid() {
+            const ldl = parseInt(document.getElementById('lipid-ldl').value);
+            const maxStatin = document.getElementById('lipid-statin').value;
+            const resultBox = document.getElementById('lipid-result');
+            const resultText = document.getElementById('lipid-result-text');
+            const icon = document.getElementById('lipid-icon');
+
+            if (isNaN(ldl)) {
+                showResult(resultBox, resultText, "Please enter a valid LDL cholesterol value.", "ph-warning", "text-orange-500", icon);
+                return;
+            }
+
+            let message = "";
+            let iconClass = "";
+            let colorClass = "";
+
+            if (maxStatin === 'no') {
+                message = "<strong>Recommendation: Optimize Statin Therapy</strong><br>High-intensity or maximally tolerated statin therapy is the foundational component. Optimize statin dose first and repeat panel in 4-8 weeks.";
+                iconClass = "ph-arrow-up-right";
+                colorClass = "text-yellow-600";
+            } else if (ldl >= 70) {
+                message = "<strong>Recommendation: Add Non-Statin Therapy</strong><br>Because LDL remains ≥ 70 mg/dL despite maximally tolerated statin, guidelines recommend adding Ezetimibe or a PCSK9 inhibitor.";
+                iconClass = "ph-plus-circle";
+                colorClass = "text-red-500";
+            } else {
+                message = "<strong>Recommendation: Continue Current Therapy</strong><br>LDL is below the 70 mg/dL threshold on maximally tolerated statin. Continue monitoring.";
+                iconClass = "ph-check-circle";
+                colorClass = "text-green-500";
+            }
+
+            showResult(resultBox, resultText, message, iconClass, colorClass, icon);
+            toolsCompleted.lipid = true;
+            updateProgress();
+        }
+
+        // ICD Calculator Logic
+        function calculateICD() {
+            const ef = parseInt(document.getElementById('icd-ef').value);
+            const nyha = document.getElementById('icd-nyha').value;
+            const daysMI = document.getElementById('icd-mi').value ? parseInt(document.getElementById('icd-mi').value) : 999; 
+            const monthsRevasc = document.getElementById('icd-revasc').value ? parseInt(document.getElementById('icd-revasc').value) : 999;
+            
+            const resultBox = document.getElementById('icd-result');
+            const resultText = document.getElementById('icd-result-text');
+            const icon = document.getElementById('icd-icon');
+
+            if (isNaN(ef) || !nyha) {
+                showResult(resultBox, resultText, "Please enter EF% and select NYHA class.", "ph-warning", "text-orange-500", icon);
+                return;
+            }
+
+            // Check timing criteria
+            if (daysMI < 40 || monthsRevasc < 3) {
+                showResult(resultBox, resultText, "<strong>Recommendation: Defer ICD Placement</strong><br>Patient is within the recovery period (< 40 days post-MI or < 3 months post-revascularization). Stunned myocardium may regain function. Defer decision and reassess later.", "ph-clock-countdown", "text-orange-500", icon);
+                toolsCompleted.icd = true;
+                updateProgress();
+                return;
+            }
+
+            // Check primary prevention criteria
+            let indicated = false;
+            if (nyha === 'II_III' && ef < 35) {
+                indicated = true;
+            } else if (nyha === 'I' && ef < 30) {
+                indicated = true;
+            }
+
+            if (indicated) {
+                showResult(resultBox, resultText, "<strong>Recommendation: ICD is Indicated</strong><br>Patient meets the primary prevention criteria based on EF, symptom class, and having passed the required recovery period post-MI/revascularization.", "ph-check-circle", "text-teal-600", icon);
+            } else {
+                showResult(resultBox, resultText, "<strong>Recommendation: ICD Not Routinely Indicated for Primary Prevention</strong><br>Patient does not currently meet the standard EF/NYHA criteria for prophylactic ICD placement based on these guidelines.", "ph-x-circle", "text-slate-500", icon);
+            }
+            
+            toolsCompleted.icd = true;
+            updateProgress();
+        }
+
+        // Lifestyle Checklist Logic
+        function updateChecklist() {
+            const checkboxes = document.querySelectorAll('.lifestyle-check');
+            const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+            const counterText = document.getElementById('checklist-counter');
+            
+            counterText.innerText = `${checkedCount}/${checkboxes.length} Completed`;
+            
+            if (checkedCount > 0) {
+                toolsCompleted.lifestyle = true;
+                updateProgress();
+            } else {
+                toolsCompleted.lifestyle = false;
+                updateProgress();
+            }
+
+            if (checkedCount === checkboxes.length) {
+                counterText.classList.remove('bg-green-100', 'text-green-700');
+                counterText.classList.add('bg-green-600', 'text-white');
+            } else {
+                counterText.classList.add('bg-green-100', 'text-green-700');
+                counterText.classList.remove('bg-green-600', 'text-white');
+            }
+        }
+
+        // Helper function to display results
+        function showResult(box, textElement, message, iconClass, colorClass, iconElement = null) {
+            textElement.innerHTML = message;
+            
+            if (iconElement) {
+                // Remove all previous classes and add the base + new ones
+                iconElement.className = `ph-fill text-xl flex-shrink-0 mt-0.5 ${iconClass} ${colorClass}`;
+            } else {
+                // For tools that just use an i tag next to the text natively without passing the element
+                const i = textElement.previousElementSibling;
+                i.className = `ph-fill text-xl flex-shrink-0 mt-0.5 ${iconClass} ${colorClass}`;
+            }
+
+            box.classList.add('show');
+        }
+    </script>
+</body>
+</html>
