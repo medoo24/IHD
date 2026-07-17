@@ -1,16 +1,27 @@
-/* Navigation Container */
+/* Default (Light) Colors */
+body {
+    background-color: #ffffff;
+    color: #000000;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Dark Mode Colors */
+body[data-theme="dark"] {
+    background-color: #121212;
+    color: #e0e0e0;
+}
+
+/* Navigation Button Styling */
 .nav-container {
     margin-top: 50px;
     padding: 20px;
-    border-top: 1px solid #444;
+    border-top: 1px solid #ccc;
     text-align: center;
     display: flex;
     justify-content: center;
     gap: 15px;
-    align-items: center;
 }
 
-/* Button Styling */
 .nav-btn {
     padding: 10px 20px;
     background-color: #007bff;
@@ -20,16 +31,4 @@
     font-weight: bold;
     border: none;
     cursor: pointer;
-    transition: background 0.3s ease, transform 0.2s;
-}
-
-.nav-btn:hover {
-    background-color: #0056b3;
-    transform: translateY(-2px);
-}
-
-/* Dark mode specific button adjustment */
-body.dark-mode .nav-btn {
-    background-color: #bb86fc;
-    color: #121212 !important;
 }
