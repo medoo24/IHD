@@ -11,7 +11,7 @@
     }
     navHTML += `<a href="index.html">Home</a>`;
     if (currentIndex < pages.length - 1) {
-        navHTML += `<a href="${pages[currentIndex + 1]}">Next »</a>`;
+        navHTML += `<a href="${pages[currentIndex + 1]}">Next »</a>`; 
     }
     
     navHTML += '</div>';
